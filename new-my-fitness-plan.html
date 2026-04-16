@@ -78,6 +78,122 @@
 </head>
 <body class="bg-[#0a0a0a] text-white min-h-screen">
 
+  <!-- ═══════ LANDING PAGE ═══════ -->
+  <div id="landing-page" style="display:none" class="min-h-screen flex flex-col items-center justify-between px-6 py-10 relative overflow-hidden">
+    <!-- Background glow blobs -->
+    <div style="position:absolute;top:-80px;left:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(249,115,22,0.18) 0%,transparent 70%);pointer-events:none"></div>
+    <div style="position:absolute;bottom:-60px;right:-60px;width:260px;height:260px;background:radial-gradient(circle,rgba(249,115,22,0.10) 0%,transparent 70%);pointer-events:none"></div>
+
+    <!-- Top badge -->
+    <div class="w-full flex justify-center pt-2">
+      <span class="text-[10px] font-black uppercase tracking-[0.2em] text-[#f97316] bg-[#f97316]/10 border border-[#f97316]/20 px-3 py-1 rounded-full">14-Week Transformation</span>
+    </div>
+
+    <!-- Hero content -->
+    <div class="flex-1 flex flex-col items-center justify-center text-center gap-6 w-full max-w-sm">
+      <!-- Flame icon -->
+      <div style="width:80px;height:80px;background:linear-gradient(135deg,#f97316,#ea580c);border-radius:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(249,115,22,0.35)" class="text-4xl">🔥</div>
+
+      <!-- Headline -->
+      <div>
+        <h1 style="font-size:2rem;font-weight:900;line-height:1.1;letter-spacing:-0.02em" class="text-white">Your 3-Month<br><span class="text-[#f97316]">Body Transformation</span></h1>
+        <p class="text-[#6b7280] text-sm mt-3 leading-relaxed">A complete structured gym + abs program. 6 days a week, every exercise planned, every week progressive.</p>
+      </div>
+
+      <!-- Stat pills -->
+      <div class="grid grid-cols-2 gap-2 w-full">
+        <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-3 text-center">
+          <p class="text-[#f97316] font-black text-xl">14</p>
+          <p class="text-[#6b7280] text-[11px] font-semibold uppercase tracking-wider mt-0.5">Weeks</p>
+        </div>
+        <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-3 text-center">
+          <p class="text-[#f97316] font-black text-xl">84</p>
+          <p class="text-[#6b7280] text-[11px] font-semibold uppercase tracking-wider mt-0.5">Sessions</p>
+        </div>
+        <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-3 text-center">
+          <p class="text-[#f97316] font-black text-xl">6</p>
+          <p class="text-[#6b7280] text-[11px] font-semibold uppercase tracking-wider mt-0.5">Days / Week</p>
+        </div>
+        <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-3 text-center">
+          <p class="text-[#f97316] font-black text-xl">5</p>
+          <p class="text-[#6b7280] text-[11px] font-semibold uppercase tracking-wider mt-0.5">Muscle Groups</p>
+        </div>
+      </div>
+
+      <!-- What's covered -->
+      <div class="w-full bg-[#141414] border border-[#2a2a2a] rounded-xl p-4 text-left space-y-2">
+        <p class="text-[#6b7280] text-[11px] font-black uppercase tracking-widest mb-3">What's included</p>
+        <div class="flex items-center gap-2.5"><span class="text-base">💪</span><span class="text-white text-sm">Chest A &amp; B · Back · Legs · Shoulders · Arms</span></div>
+        <div class="flex items-center gap-2.5"><span class="text-base">🔥</span><span class="text-white text-sm">Daily abs &amp; oblique core finisher</span></div>
+        <div class="flex items-center gap-2.5"><span class="text-base">📈</span><span class="text-white text-sm">Progressive 4-week rotating workout cycles</span></div>
+        <div class="flex items-center gap-2.5"><span class="text-base">🥗</span><span class="text-white text-sm">Daily meal plan with calorie targets</span></div>
+        <div class="flex items-center gap-2.5"><span class="text-base">✅</span><span class="text-white text-sm">Set-by-set progress tracking</span></div>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <div class="w-full max-w-sm space-y-3">
+      <button onclick="startProgram()" style="width:100%;background:linear-gradient(135deg,#f97316,#ea580c);border:none;border-radius:16px;padding:18px;font-size:1.1rem;font-weight:900;color:white;letter-spacing:0.02em;box-shadow:0 8px 32px rgba(249,115,22,0.4);cursor:pointer;transition:transform 0.1s,box-shadow 0.1s"
+        onmousedown="this.style.transform='scale(0.97)'" onmouseup="this.style.transform=''" ontouchstart="this.style.transform='scale(0.97)'" ontouchend="this.style.transform=''">
+        Start My Transformation →
+      </button>
+      <p class="text-[#6b7280] text-[11px] text-center">Today becomes Day 1, Week 1. Your journey starts now.</p>
+    </div>
+  </div>
+
+  <!-- ═══════ COMPLETION PAGE ═══════ -->
+  <div id="completion-page" style="display:none" class="min-h-screen flex flex-col items-center justify-between px-6 py-10 relative overflow-hidden">
+    <div style="position:absolute;top:-80px;left:-80px;width:320px;height:320px;background:radial-gradient(circle,rgba(249,115,22,0.15) 0%,transparent 70%);pointer-events:none"></div>
+
+    <div class="w-full flex justify-center pt-2">
+      <span class="text-[10px] font-black uppercase tracking-[0.2em] text-[#f97316] bg-[#f97316]/10 border border-[#f97316]/20 px-3 py-1 rounded-full">Program Complete 🏆</span>
+    </div>
+
+    <div class="flex-1 flex flex-col items-center justify-center text-center gap-6 w-full max-w-sm">
+      <div style="width:80px;height:80px;background:linear-gradient(135deg,#f97316,#ea580c);border-radius:24px;display:flex;align-items:center;justify-content:center;box-shadow:0 0 40px rgba(249,115,22,0.35)" class="text-4xl">🏆</div>
+
+      <div>
+        <h1 style="font-size:2rem;font-weight:900;line-height:1.1;letter-spacing:-0.02em" class="text-white">You Did It.<br><span class="text-[#f97316]">14 Weeks Done.</span></h1>
+        <p class="text-[#6b7280] text-sm mt-3 leading-relaxed">You've completed the full 3-month body transformation program. That's 84 sessions, thousands of reps, and consistent commitment.</p>
+      </div>
+
+      <div class="grid grid-cols-2 gap-2 w-full">
+        <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-3 text-center">
+          <p class="text-[#f97316] font-black text-xl">14</p>
+          <p class="text-[#6b7280] text-[11px] font-semibold uppercase tracking-wider mt-0.5">Weeks</p>
+        </div>
+        <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-3 text-center">
+          <p class="text-[#f97316] font-black text-xl">84</p>
+          <p class="text-[#6b7280] text-[11px] font-semibold uppercase tracking-wider mt-0.5">Sessions</p>
+        </div>
+        <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-3 text-center">
+          <p class="text-[#f97316] font-black text-xl">6</p>
+          <p class="text-[#6b7280] text-[11px] font-semibold uppercase tracking-wider mt-0.5">Days / Week</p>
+        </div>
+        <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-3 text-center">
+          <p class="text-[#f97316] font-black text-xl">∞</p>
+          <p class="text-[#6b7280] text-[11px] font-semibold uppercase tracking-wider mt-0.5">Dedication</p>
+        </div>
+      </div>
+
+      <div class="w-full bg-[#141414] border border-[#2a2a2a] rounded-xl p-4 text-left">
+        <p class="text-[#6b7280] text-[11px] font-black uppercase tracking-widest mb-3">What you built</p>
+        <div class="space-y-2">
+          <div class="flex items-center gap-2.5"><span class="text-base">💪</span><span class="text-white text-sm">Chest, Back, Legs, Shoulders &amp; Arms</span></div>
+          <div class="flex items-center gap-2.5"><span class="text-base">🔥</span><span class="text-white text-sm">Obliques &amp; core burned down</span></div>
+          <div class="flex items-center gap-2.5"><span class="text-base">📈</span><span class="text-white text-sm">Progressive overload every 4 weeks</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="w-full max-w-sm space-y-3">
+      <button onclick="restartProgram()" style="width:100%;background:linear-gradient(135deg,#f97316,#ea580c);border:none;border-radius:16px;padding:18px;font-size:1.1rem;font-weight:900;color:white;letter-spacing:0.02em;box-shadow:0 8px 32px rgba(249,115,22,0.4);cursor:pointer">
+        Start a New Cycle →
+      </button>
+      <p class="text-[#6b7280] text-[11px] text-center">Your previous progress is saved. A new 14-week cycle will begin from today.</p>
+    </div>
+  </div>
+
   <div id="app" class="max-w-lg mx-auto">
 
     <!-- ═══════ HOME + WORKOUT (merged) ═══════ -->
@@ -360,18 +476,41 @@
     }
   ];
 
-  // Program start date: Monday Mar 30 2026 (Week 1, Day 1)
-  const PROGRAM_START = new Date('2026-03-30T00:00:00');
+  // ─── Dynamic program start (stored per-user in localStorage) ───────────────
+  function getProgramStart() {
+    const stored = localStorage.getItem('programStartDate');
+    if (stored) return new Date(stored + 'T00:00:00');
+    return null; // null = not started yet
+  }
+
+  function saveProgramStart(date) {
+    const iso = date.toISOString().split('T')[0];
+    localStorage.setItem('programStartDate', iso);
+  }
+
+  // PROGRAM_START is live — null until user clicks Start
+  let PROGRAM_START = getProgramStart();
 
   function getAutoWeekIdx() {
+    if (!PROGRAM_START) return 0;
     const now = new Date();
-    // Find this week's Monday
-    const dow = now.getDay(); // 0=Sun
-    const daysToMon = (dow === 0 ? -6 : 1 - dow);
-    const thisMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysToMon);
-    const weeksDiff = Math.floor((thisMonday - PROGRAM_START) / (7 * 24 * 60 * 60 * 1000));
-    if (weeksDiff < 0) return 0; // before program start → show W1
-    return Math.min(weeksDiff, 13); // 0-13
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const msPerWeek = 7 * msPerDay;
+    // Days elapsed since start date (start date = Day 0 of Week 1)
+    const startMidnight = new Date(PROGRAM_START.getFullYear(), PROGRAM_START.getMonth(), PROGRAM_START.getDate());
+    const todayMidnight = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const daysDiff = Math.floor((todayMidnight - startMidnight) / msPerDay);
+    if (daysDiff < 0) return 0;
+    return Math.min(Math.floor(daysDiff / 7), 13); // 0-13
+  }
+
+  function isProgramComplete() {
+    if (!PROGRAM_START) return false;
+    const msPerDay = 24 * 60 * 60 * 1000;
+    const startMidnight = new Date(PROGRAM_START.getFullYear(), PROGRAM_START.getMonth(), PROGRAM_START.getDate());
+    const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const daysDiff = Math.floor((todayMidnight - startMidnight) / msPerDay);
+    return daysDiff >= 14 * 7; // past 98 days
   }
 
   // Helper: get the full day plan for a given week index + day name
@@ -545,8 +684,21 @@
   const todayName = today.toLocaleDateString('en-US', { weekday:'long' });
   const dateKey   = today.toISOString().split('T')[0];
   const WK_DAYS   = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+
+  // For dynamic start: today's day-of-week relative to start date
+  function getTodayProgramDay() {
+    if (!PROGRAM_START) return WK_DAYS.includes(todayName) ? todayName : 'Monday';
+    const msPerDay   = 24 * 60 * 60 * 1000;
+    const start      = new Date(PROGRAM_START.getFullYear(), PROGRAM_START.getMonth(), PROGRAM_START.getDate());
+    const todayMid   = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+    const daysDiff   = Math.floor((todayMid - start) / msPerDay);
+    if (daysDiff < 0) return WK_DAYS[0]; // before start → Monday
+    const dayInWeek  = daysDiff % 7; // 0=start day, 1=next day, etc.
+    return WK_DAYS[Math.min(dayInWeek, 6)];
+  }
+
   let activeTab        = 'home';
-  let activeWkDay      = WK_DAYS.includes(todayName) ? todayName : 'Monday';
+  let activeWkDay      = getTodayProgramDay();
   let activeWeekIdx    = getAutoWeekIdx(); // 0-13
   let activeCoreFilter = 'All';
   let activeDietDay    = WK_DAYS.includes(todayName) ? todayName : 'Monday';
@@ -760,9 +912,12 @@
   // ═══════════════════════════════════════
 
   function getWorkoutDate(weekIdx, dayName) {
+    if (!PROGRAM_START) return '';
     const dayOffset = { Monday:0, Tuesday:1, Wednesday:2, Thursday:3, Friday:4, Saturday:5, Sunday:6 };
-    const monday = new Date(PROGRAM_START.getTime() + weekIdx * 7 * 24 * 60 * 60 * 1000);
-    const date   = new Date(monday.getTime() + (dayOffset[dayName] || 0) * 24 * 60 * 60 * 1000);
+    const msPerDay  = 24 * 60 * 60 * 1000;
+    const start     = new Date(PROGRAM_START.getFullYear(), PROGRAM_START.getMonth(), PROGRAM_START.getDate());
+    const dayZeroOffset = (dayOffset[Object.keys(dayOffset)[0]] || 0); // start date = Week1 Day1
+    const date = new Date(start.getTime() + (weekIdx * 7 + (dayOffset[dayName] || 0)) * msPerDay);
     return date.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
   }
 
@@ -806,11 +961,13 @@
   }
 
   function getWeekDateRange(weekIdx) {
-    const msPerWeek = 7 * 24 * 60 * 60 * 1000;
-    const monday = new Date(PROGRAM_START.getTime() + weekIdx * msPerWeek);
-    const sunday = new Date(monday.getTime() + 6 * 24 * 60 * 60 * 1000);
+    if (!PROGRAM_START) return '';
+    const msPerDay  = 24 * 60 * 60 * 1000;
+    const start     = new Date(PROGRAM_START.getFullYear(), PROGRAM_START.getMonth(), PROGRAM_START.getDate());
+    const day1      = new Date(start.getTime() + weekIdx * 7 * msPerDay);
+    const day7      = new Date(day1.getTime() + 6 * msPerDay);
     const fmt = d => d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
-    return fmt(monday) + ' – ' + fmt(sunday);
+    return fmt(day1) + ' – ' + fmt(day7);
   }
 
   function renderWorkout(dayName) {
@@ -1084,21 +1241,68 @@
   // INIT
   // ═══════════════════════════════════════
 
-  document.addEventListener('DOMContentLoaded', function() {
-    renderHome();   // renders date + workout for today via renderWorkout()
+  // ─── Landing / Completion routing ───────────────────────────────────────────
+  function showLanding() {
+    document.getElementById('landing-page').style.display = 'flex';
+    document.getElementById('completion-page').style.display = 'none';
+    document.getElementById('app').style.display = 'none';
+  }
+
+  function showApp() {
+    document.getElementById('landing-page').style.display = 'none';
+    document.getElementById('completion-page').style.display = 'none';
+    document.getElementById('app').style.display = '';
+  }
+
+  function showCompletion() {
+    document.getElementById('landing-page').style.display = 'none';
+    document.getElementById('completion-page').style.display = 'flex';
+    document.getElementById('app').style.display = 'none';
+  }
+
+  function startProgram() {
+    const startDate = new Date();
+    saveProgramStart(startDate);
+    PROGRAM_START = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
+    activeWeekIdx = 0;
+    activeWkDay   = WK_DAYS[0]; // Day 1 = first day of program
+    showApp();
+    initApp();
+  }
+
+  function restartProgram() {
+    // Keep progress, just reset start date
+    startProgram();
+  }
+
+  function initApp() {
+    renderHome();
     renderCore();
     renderDiet();
     renderPullup();
-
     setupGifClicks('workout-exercise-list');
     setupCheckboxes('workout-exercise-list');
     setupGifClicks('core-today-list');
     setupCheckboxes('core-today-list');
     setupGifClicks('pullup-page-list');
     setupCheckboxes('pullup-page-list');
-    // core-lib-list delegation is attached inside renderCoreLib
-
     switchTab('home');
+  }
+
+  document.addEventListener('DOMContentLoaded', function() {
+    if (!PROGRAM_START) {
+      // First-time visitor — show landing
+      showLanding();
+    } else if (isProgramComplete()) {
+      // Completed all 14 weeks — show completion screen
+      showCompletion();
+    } else {
+      // Returning user — land directly on today's workout
+      activeWeekIdx = getAutoWeekIdx();
+      activeWkDay   = getTodayProgramDay();
+      showApp();
+      initApp();
+    }
   });
   </script>
 </body>
