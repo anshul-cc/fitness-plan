@@ -1,8 +1,28 @@
 # 🏋️ My 3-Month Transformation — Fitness Plan App
 
-A personal mobile-first single-page fitness tracker for a 14-week gym + abs transformation program. Built with vanilla JavaScript and Tailwind CSS. No backend, no login — all progress saved locally in the browser.
+A shareable, mobile-first single-page fitness tracker for a 14-week gym + abs transformation program. Built with vanilla JavaScript and Tailwind CSS. No backend, no login — all progress saved locally in the browser.
 
 **🌐 Live App:** [https://anshul-cc.github.io/fitness-plan/](https://anshul-cc.github.io/fitness-plan/)
+
+---
+
+## 🚀 User Flow
+
+### First-time visitor
+1. Lands on a **full-screen dark landing page** — program summary, stat pills, what's included
+2. Clicks **"Start My Transformation →"** — today's date is saved as their personal Day 1
+3. Goes straight into **Week 1, Day 1** of the program
+
+### Returning visitor
+- App reads the saved start date from localStorage
+- Automatically computes the current week (1–14) and day relative to that start date
+- Opens directly on **today's workout** — no taps needed
+
+### After Week 14
+- Shows a **completion / celebration screen** with a journey summary
+- **"Start a New Cycle →"** resets the start date to today; previous progress data is preserved
+
+> The program dates are fully dynamic — anyone can open the link and start their own independent 14-week journey from any date.
 
 ---
 
@@ -10,9 +30,9 @@ A personal mobile-first single-page fitness tracker for a 14-week gym + abs tran
 
 | Detail | Value |
 |---|---|
-| **Duration** | 14 weeks (March 30 – July 6, 2026) |
-| **Training days** | 6 days/week (Mon–Sat) |
-| **Rest day** | Sunday |
+| **Duration** | 14 weeks from your personal start date |
+| **Training days** | 6 days/week (Mon–Sat relative to start) |
+| **Rest day** | Day 7 of each week |
 | **Sets per exercise** | 4 sets |
 | **Rest between sets** | 60 seconds |
 | **Core finisher** | Every training day (~35–38 min) |
@@ -81,15 +101,19 @@ Upper Abs · Lower Abs · Obliques & Love Handles · Stability
 
 ## 📱 App Features
 
-- **Auto week detection** — app knows which week of the program you're in based on today's date
+- **Landing page** — beautiful dark onboarding screen with program stats and a single CTA to begin
+- **Dynamic start date** — each user's Week 1 Day 1 begins the day they click Start; stored in localStorage
+- **Auto week + day detection** — always opens on the correct week and day relative to each user's personal start
+- **Completion screen** — celebrates finishing 14 weeks with a summary and option to restart a new cycle
 - **Exercise GIF demos** — animated GIF for every exercise with multi-GIF carousel support
-- **Progress tracking** — check off sets as you complete them; saved to localStorage by date
+- **Progress tracking** — check off sets as you complete them; saved to localStorage by date (preserved across restarts)
 - **Calorie estimates** — per-exercise kcal burn + total daily kcal shown in workout header
 - **Core tab** — browse full core exercise library, filtered by difficulty (Easy / Moderate / Challenging)
 - **Meal plan tab** — daily breakfast, lunch, dinner and snack suggestions with calorie counts
 - **Pull-up progression** — structured Dead Hang → Scapular Pull-up → Inverted Row → Negative Pull-up program on Tuesdays
 - **Optional exercises** — marked with **(O)** for exercises recommended to skip if fatigued (e.g. Bench Dips, DB Front Raises)
 - **PWA-ready** — add to home screen on iPhone/Android for a native app feel
+- **Shareable** — anyone can open the URL and start their own independent 14-week journey
 
 ---
 
@@ -130,21 +154,25 @@ npx serve -p 3456 .
 
 ---
 
-## 📅 Program Timeline
+## 📅 Program Structure
 
-| Week | Dates | Gym Cycle | Abs Cycle |
-|---|---|---|---|
-| W1 | Mar 30 – Apr 5 | Gym W1 | Legacy Phase |
-| W2 | Apr 6 – Apr 12 | Gym W2 | Legacy Phase |
-| W3 | Apr 13 – Apr 19 | Gym W3 | Legacy Phase |
-| W4 | Apr 20 – Apr 26 | Gym W4 | Abs W1 Foundation |
-| W5 | Apr 27 – May 3 | Gym W1 | Abs W2 Build |
-| W6 | May 4 – May 10 | Gym W2 | Abs W3 Intensity |
-| W7 | May 11 – May 17 | Gym W3 | Abs W4 Peak |
-| W8 | May 18 – May 24 | Gym W4 | Abs W1 Foundation |
-| W9 | May 25 – May 31 | Gym W1 | Abs W2 Build |
-| W10 | Jun 1 – Jun 7 | Gym W2 | Abs W3 Intensity |
-| W11 | Jun 8 – Jun 14 | Gym W3 | Abs W4 Peak |
-| W12 | Jun 15 – Jun 21 | Gym W4 | Abs W1 Foundation |
-| W13 | Jun 22 – Jun 28 | Gym W1 | Abs W2 Build |
-| W14 | Jun 29 – Jul 5 | Gym W2 | Abs W3 Intensity |
+Dates are fully dynamic — they shift based on each user's personal start date. The week number and cycle always follow this pattern:
+
+| Week | Gym Cycle | Abs Core Cycle |
+|---|---|---|
+| W1 | Gym W1 — Foundation | Legacy Phase (Weeks 1–3) |
+| W2 | Gym W2 — Machine Variations | Legacy Phase |
+| W3 | Gym W3 — Incline Emphasis | Legacy Phase |
+| W4 | Gym W4 — Peak Intensity | **Abs W1 — Foundation** |
+| W5 | Gym W1 | Abs W2 — Build |
+| W6 | Gym W2 | Abs W3 — Intensity |
+| W7 | Gym W3 | Abs W4 — Peak |
+| W8 | Gym W4 | Abs W1 — Foundation |
+| W9 | Gym W1 | Abs W2 — Build |
+| W10 | Gym W2 | Abs W3 — Intensity |
+| W11 | Gym W3 | Abs W4 — Peak |
+| W12 | Gym W4 | Abs W1 — Foundation |
+| W13 | Gym W1 | Abs W2 — Build |
+| W14 | Gym W2 | Abs W3 — Intensity |
+
+> For the original author (start date Mar 30, 2026), W4 begins Apr 20 and W14 ends Jul 5, 2026.
