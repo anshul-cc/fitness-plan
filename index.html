@@ -1,0 +1,1105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>My 3-Month Transformation</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: { extend: { colors: { gym: { bg:'#0a0a0a', surface:'#141414', border:'#2a2a2a', accent:'#f97316', muted:'#6b7280' } } } }
+    }
+  </script>
+  <style>
+    * { -webkit-tap-highlight-color: transparent; }
+    .scrollbar-none { -ms-overflow-style:none; scrollbar-width:none; }
+    .scrollbar-none::-webkit-scrollbar { display:none; }
+
+    @keyframes shimmer { 0%{background-position:-200% 0} 100%{background-position:200% 0} }
+    .gif-shimmer {
+      background:linear-gradient(90deg,#1a1a1a 25%,#2d2d2d 50%,#1a1a1a 75%);
+      background-size:200% 100%; animation:shimmer 1.4s infinite;
+    }
+
+    .tab-page { display:none; }
+    .tab-page.active { display:block; }
+
+    .nav-tab { color:#6b7280; transition:color 0.2s; }
+    .nav-tab.active { color:#f97316; }
+    .nav-dot { display:none; width:4px; height:4px; background:#f97316; border-radius:50%; margin:0 auto 2px; }
+    .nav-tab.active .nav-dot { display:block; }
+
+    .day-pill { color:#6b7280; background:#141414; border:1px solid #2a2a2a; transition:all 0.2s; position:relative; }
+    .day-pill.active { background:#f97316; color:white; border-color:#f97316; }
+    .today-dot { position:absolute; bottom:4px; left:50%; transform:translateX(-50%); width:4px; height:4px; background:#f97316; border-radius:50%; pointer-events:none; }
+    .day-pill.active .today-dot { background:white; }
+
+    .week-pill { transition:all 0.2s; }
+    .week-pill.active { background:#f97316 !important; color:white !important; border-color:#f97316 !important; }
+
+    .filter-btn { color:#6b7280; background:#141414; border:1px solid #2a2a2a; transition:all 0.2s; }
+    .filter-btn.active { background:#f97316; color:white; border-color:#f97316; }
+
+    /* Hero exercise card */
+    .ex-block { border-radius:0.75rem; overflow:hidden; border:1px solid #2a2a2a; background:#141414; transition:border-color 0.2s; }
+    .ex-block.done-card { border-color:#3a1f00; }
+    .hero-wrap { position:relative; cursor:pointer; }
+    .hero-gif { width:100%; height:220px; object-fit:cover; object-position:center top; display:block; }
+    .hero-done-tint { position:absolute; inset:0; background:rgba(249,115,22,0.13); display:none; pointer-events:none; z-index:1; }
+    .ex-block.done-card .hero-done-tint { display:block; }
+    .hero-overlay {
+      position:absolute; bottom:0; left:0; right:0; z-index:2;
+      background:linear-gradient(to top, rgba(0,0,0,0.97) 0%, rgba(0,0,0,0.75) 40%, rgba(0,0,0,0.2) 70%, transparent 100%);
+      padding:48px 14px 14px;
+      pointer-events:none;
+    }
+    .hero-overlay p { text-shadow:0 1px 4px rgba(0,0,0,0.9); }
+    .hero-check { position:absolute; top:10px; right:10px; z-index:4; background:rgba(0,0,0,0.55); border-radius:8px; padding:4px; line-height:0; cursor:pointer; }
+    .hero-check input[type=checkbox] { width:22px; height:22px; accent-color:#f97316; cursor:pointer; display:block; }
+    .done-name { text-decoration:line-through; opacity:0.5; }
+
+    /* Multi-GIF strip */
+    .gif-strip { display:flex; align-items:center; gap:8px; padding:8px 12px; background:#141414; border-top:1px solid #2a2a2a; }
+    .gif-strip-thumb { width:56px; height:56px; object-fit:cover; border-radius:8px; cursor:pointer; border:2px solid transparent; opacity:0.5; transition:all 0.18s; flex-shrink:0; }
+    .gif-strip-thumb.active { border-color:#f97316; opacity:1; }
+    .hero-fallback { width:100%; height:220px; background:#1c1c1c; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#6b7280; gap:6px; }
+
+    .badge-easy { background:rgba(34,197,94,.12); color:#4ade80; }
+    .badge-moderate { background:rgba(234,179,8,.12); color:#facc15; }
+    .badge-challenging { background:rgba(239,68,68,.12); color:#f87171; }
+
+    input[type="checkbox"] { accent-color:#f97316; cursor:pointer; }
+    #bottom-nav { padding-bottom:env(safe-area-inset-bottom,0px); }
+    body { padding-bottom:calc(68px + env(safe-area-inset-bottom,0px)); }
+  </style>
+</head>
+<body class="bg-[#0a0a0a] text-white min-h-screen">
+
+  <div id="app" class="max-w-lg mx-auto">
+
+    <!-- ═══════ HOME + WORKOUT (merged) ═══════ -->
+    <section id="page-home" class="tab-page active p-4 space-y-4">
+      <div class="pt-2">
+        <div class="flex items-center justify-between mb-3">
+          <h1 class="text-xl font-black text-[#f97316] uppercase tracking-wider">Workout Plan</h1>
+          <p id="home-date" class="text-[#6b7280] text-xs text-right"></p>
+        </div>
+        <!-- Week selector -->
+        <div id="week-selector" class="flex items-center gap-2 mb-3">
+          <button onclick="navWeek(-1)" class="w-8 h-8 flex items-center justify-center rounded-full bg-[#141414] border border-[#2a2a2a] text-[#6b7280] text-lg font-black leading-none active:opacity-70">‹</button>
+          <div class="flex gap-1.5 flex-1 overflow-x-auto scrollbar-none">
+            <button class="week-pill flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-black border border-[#2a2a2a] bg-[#141414] text-[#6b7280] transition-all" data-week="0"  onclick="setWeek(0)">W1</button>
+            <button class="week-pill flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-black border border-[#2a2a2a] bg-[#141414] text-[#6b7280] transition-all" data-week="1"  onclick="setWeek(1)">W2</button>
+            <button class="week-pill flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-black border border-[#2a2a2a] bg-[#141414] text-[#6b7280] transition-all" data-week="2"  onclick="setWeek(2)">W3</button>
+            <button class="week-pill flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-black border border-[#2a2a2a] bg-[#141414] text-[#6b7280] transition-all" data-week="3"  onclick="setWeek(3)">W4</button>
+            <button class="week-pill flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-black border border-[#2a2a2a] bg-[#141414] text-[#6b7280] transition-all" data-week="4"  onclick="setWeek(4)">W5</button>
+            <button class="week-pill flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-black border border-[#2a2a2a] bg-[#141414] text-[#6b7280] transition-all" data-week="5"  onclick="setWeek(5)">W6</button>
+            <button class="week-pill flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-black border border-[#2a2a2a] bg-[#141414] text-[#6b7280] transition-all" data-week="6"  onclick="setWeek(6)">W7</button>
+            <button class="week-pill flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-black border border-[#2a2a2a] bg-[#141414] text-[#6b7280] transition-all" data-week="7"  onclick="setWeek(7)">W8</button>
+            <button class="week-pill flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-black border border-[#2a2a2a] bg-[#141414] text-[#6b7280] transition-all" data-week="8"  onclick="setWeek(8)">W9</button>
+            <button class="week-pill flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-black border border-[#2a2a2a] bg-[#141414] text-[#6b7280] transition-all" data-week="9"  onclick="setWeek(9)">W10</button>
+            <button class="week-pill flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-black border border-[#2a2a2a] bg-[#141414] text-[#6b7280] transition-all" data-week="10" onclick="setWeek(10)">W11</button>
+            <button class="week-pill flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-black border border-[#2a2a2a] bg-[#141414] text-[#6b7280] transition-all" data-week="11" onclick="setWeek(11)">W12</button>
+            <button class="week-pill flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-black border border-[#2a2a2a] bg-[#141414] text-[#6b7280] transition-all" data-week="12" onclick="setWeek(12)">W13</button>
+            <button class="week-pill flex-shrink-0 px-2.5 py-1.5 rounded-lg text-xs font-black border border-[#2a2a2a] bg-[#141414] text-[#6b7280] transition-all" data-week="13" onclick="setWeek(13)">W14</button>
+          </div>
+          <button onclick="navWeek(+1)" class="w-8 h-8 flex items-center justify-center rounded-full bg-[#141414] border border-[#2a2a2a] text-[#6b7280] text-lg font-black leading-none active:opacity-70">›</button>
+          <button id="auto-week-btn" onclick="resetToAutoWeek()" class="px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-wider border border-[#2a2a2a] bg-[#141414] text-[#6b7280] leading-none active:opacity-70">AUTO</button>
+        </div>
+        <!-- Week info banner (rendered by JS) -->
+        <div id="week-banner"></div>
+      </div>
+      <div id="workout-day-strip" class="flex gap-2 overflow-x-auto scrollbar-none pb-1">
+        <button class="day-pill flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold" data-day="Monday"    onclick="setWorkoutDay('Monday')">Mon</button>
+        <button class="day-pill flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold" data-day="Tuesday"   onclick="setWorkoutDay('Tuesday')">Tue</button>
+        <button class="day-pill flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold" data-day="Wednesday" onclick="setWorkoutDay('Wednesday')">Wed</button>
+        <button class="day-pill flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold" data-day="Thursday"  onclick="setWorkoutDay('Thursday')">Thu</button>
+        <button class="day-pill flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold" data-day="Friday"    onclick="setWorkoutDay('Friday')">Fri</button>
+        <button class="day-pill flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold" data-day="Saturday"  onclick="setWorkoutDay('Saturday')">Sat</button>
+        <button class="day-pill flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold" data-day="Sunday"    onclick="setWorkoutDay('Sunday')">Sun</button>
+      </div>
+      <div id="workout-day-header"></div>
+      <div id="workout-exercise-list" class="space-y-3"></div>
+      <div id="workout-meal"></div>
+    </section>
+
+    <!-- ═══════ CORE ═══════ -->
+    <section id="page-core" class="tab-page p-4 space-y-4">
+      <div class="pt-2">
+        <h1 class="text-xl font-black text-[#f97316] uppercase tracking-wider">Core Training</h1>
+        <p class="text-[#6b7280] text-sm">Daily finisher · 5-day rotation</p>
+      </div>
+      <div>
+        <h2 class="text-xs font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2">
+          <span class="w-1 h-4 bg-[#f97316] rounded-full"></span>Today's Rotation
+        </h2>
+        <div id="core-today-list" class="space-y-3"></div>
+      </div>
+      <div class="border-t border-[#2a2a2a]"></div>
+      <div>
+        <h2 class="text-xs font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2">
+          <span class="w-1 h-4 bg-[#6b7280] rounded-full"></span>Exercise Library
+        </h2>
+        <div id="core-filter-buttons" class="flex gap-2 flex-wrap mb-4">
+          <button class="filter-btn active px-3 py-1.5 rounded-full text-sm font-bold" data-filter="All" onclick="filterCore('All')">All</button>
+          <button class="filter-btn px-3 py-1.5 rounded-full text-sm font-bold" data-filter="Easy" onclick="filterCore('Easy')">Easy</button>
+          <button class="filter-btn px-3 py-1.5 rounded-full text-sm font-bold" data-filter="Moderate" onclick="filterCore('Moderate')">Moderate</button>
+          <button class="filter-btn px-3 py-1.5 rounded-full text-sm font-bold" data-filter="Challenging" onclick="filterCore('Challenging')">Challenging</button>
+        </div>
+        <div id="core-lib-list" class="space-y-3"></div>
+      </div>
+    </section>
+
+    <!-- ═══════ PULL-UPS ═══════ -->
+    <section id="page-pullup" class="tab-page p-4 space-y-4">
+      <div class="pt-2">
+        <h1 class="text-xl font-black text-[#f97316] uppercase tracking-wider">Pull-Up Progression</h1>
+        <p class="text-[#6b7280] text-sm">4-step program · build from zero</p>
+      </div>
+      <div class="bg-[#1a0900] border border-[#f97316]/20 rounded-xl p-4">
+        <p class="text-xs text-[#f97316] font-black uppercase tracking-widest mb-1">How to progress</p>
+        <p class="text-[#9a9a9a] text-xs leading-relaxed">Master each step before moving to the next. Dead Hang → Scapular control → Inverted Row strength → Negative Pull-Up → full Pull-Up.</p>
+      </div>
+      <div id="pullup-page-list" class="space-y-3"></div>
+    </section>
+
+    <!-- ═══════ DIET ═══════ -->
+    <section id="page-diet" class="tab-page p-4 space-y-4">
+      <div class="pt-2">
+        <h1 class="text-xl font-black text-[#f97316] uppercase tracking-wider">Diet Plan</h1>
+        <p class="text-[#6b7280] text-sm">Indian balanced diet · high protein</p>
+      </div>
+      <div id="diet-day-strip" class="flex gap-2 overflow-x-auto scrollbar-none pb-1">
+        <button class="day-pill flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold" data-day="Monday"    onclick="setDietDay('Monday')">Mon</button>
+        <button class="day-pill flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold" data-day="Tuesday"   onclick="setDietDay('Tuesday')">Tue</button>
+        <button class="day-pill flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold" data-day="Wednesday" onclick="setDietDay('Wednesday')">Wed</button>
+        <button class="day-pill flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold" data-day="Thursday"  onclick="setDietDay('Thursday')">Thu</button>
+        <button class="day-pill flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold" data-day="Friday"    onclick="setDietDay('Friday')">Fri</button>
+        <button class="day-pill flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold" data-day="Saturday"  onclick="setDietDay('Saturday')">Sat</button>
+        <button class="day-pill flex-shrink-0 px-4 py-2 rounded-full text-sm font-bold" data-day="Sunday"    onclick="setDietDay('Sunday')">Sun</button>
+      </div>
+      <div id="diet-day-content"></div>
+      <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-4 pb-5">
+        <h2 class="font-black text-white text-sm mb-2 flex items-center gap-2"><span>💧</span>Daily Tips</h2>
+        <ul class="space-y-1.5 text-xs text-[#6b7280]">
+          <li class="flex gap-2"><span class="text-[#f97316]">•</span>Drink 3–4L water daily</li>
+          <li class="flex gap-2"><span class="text-[#f97316]">•</span>Eat within 1 hr of waking up</li>
+          <li class="flex gap-2"><span class="text-[#f97316]">•</span>Post-workout: protein within 30 min</li>
+          <li class="flex gap-2"><span class="text-[#f97316]">•</span>Avoid fried snacks between meals</li>
+          <li class="flex gap-2"><span class="text-[#f97316]">•</span>Last meal 2 hrs before sleep</li>
+        </ul>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ═══════ GIF MODAL ═══════ -->
+  <div id="gif-modal" style="display:none" class="fixed inset-0 z-50">
+    <div class="absolute inset-0 bg-black/88 backdrop-blur-sm" onclick="closeModal()"></div>
+    <div class="absolute inset-0 flex items-center justify-center p-4 pointer-events-none">
+      <div class="relative bg-[#141414] border border-[#2a2a2a] rounded-2xl overflow-hidden w-full max-w-sm pointer-events-auto">
+        <button onclick="closeModal()" class="absolute top-3 right-3 z-10 w-8 h-8 flex items-center justify-center text-[#6b7280] bg-[#222] rounded-full text-sm font-black hover:text-white">✕</button>
+        <!-- GIF display area -->
+        <div class="relative bg-[#0a0a0a] min-h-48 flex items-center justify-center">
+          <img id="modal-gif" src="" alt="" class="w-full max-h-72 object-contain block"
+               onerror="document.getElementById('modal-fallback').style.display='flex';this.style.display='none'">
+          <div id="modal-fallback" style="display:none" class="w-full h-48 flex-col items-center justify-center text-[#6b7280] gap-2 text-sm">
+            <span class="text-4xl">🎥</span>GIF not available
+          </div>
+          <!-- Prev / Next (shown only if multi-GIF) -->
+          <button id="modal-prev" onclick="modalNav(-1)" style="display:none"
+            class="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/65 rounded-full text-white text-2xl font-bold flex items-center justify-center leading-none z-10">‹</button>
+          <button id="modal-next" onclick="modalNav(+1)" style="display:none"
+            class="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 bg-black/65 rounded-full text-white text-2xl font-bold flex items-center justify-center leading-none z-10">›</button>
+        </div>
+        <!-- Info panel -->
+        <div class="p-4">
+          <div class="flex items-start justify-between gap-2 mb-1">
+            <p id="modal-name" class="text-[#f97316] font-black text-base leading-tight"></p>
+            <div id="modal-dots" class="flex gap-1.5 items-center flex-shrink-0 mt-1"></div>
+          </div>
+          <p id="modal-sets" class="text-[#6b7280] text-xs font-bold mb-1"></p>
+          <p id="modal-tip" class="text-[#9a9a9a] text-xs leading-relaxed"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════ BOTTOM NAV ═══════ -->
+  <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 bg-[#141414] border-t border-[#222] z-40">
+    <div class="flex max-w-lg mx-auto">
+      <button class="nav-tab active flex-1 flex flex-col items-center py-3 gap-0.5" data-tab="home" onclick="switchTab('home')">
+        <span class="nav-dot"></span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M3.75 13.5l10.5-11.25L12 10.5h8.25L9.75 21.75 12 13.5H3.75z"/></svg>
+        <span class="text-[10px] font-semibold">Workout</span>
+      </button>
+      <button class="nav-tab flex-1 flex flex-col items-center py-3 gap-0.5" data-tab="pullup" onclick="switchTab('pullup')">
+        <span class="nav-dot"></span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M5 3v4M3 5h4M6 17v4m-2-2h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z"/></svg>
+        <span class="text-[10px] font-semibold">Pull-Ups</span>
+      </button>
+      <button class="nav-tab flex-1 flex flex-col items-center py-3 gap-0.5" data-tab="core" onclick="switchTab('core')">
+        <span class="nav-dot"></span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path stroke-linecap="round" d="M12 2v2m0 16v2M2 12h2m16 0h2m-3.22-6.78-1.42 1.42M6.64 17.36l-1.42 1.42M17.36 17.36l-1.42-1.42M6.64 6.64 5.22 5.22"/></svg>
+        <span class="text-[10px] font-semibold">Core</span>
+      </button>
+      <button class="nav-tab flex-1 flex flex-col items-center py-3 gap-0.5" data-tab="diet" onclick="switchTab('diet')">
+        <span class="nav-dot"></span>
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 8.25v-1.5m0 1.5c-1.355 0-2.697.056-4.024.166C6.845 8.51 6 9.473 6 10.608v2.513m6-4.87c1.355 0 2.697.056 4.024.166C17.155 8.51 18 10.608v2.513m-3-4.87v-1.5m-6 1.5v-1.5m12 9.75-1.5.75a3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0 3.354 3.354 0 01-3 0 3.354 3.354 0 00-3 0L3 16.5m15-3.38a48.474 48.474 0 00-6-.37c-2.032 0-4.034.125-6 .37m12 0c.39.049.777.102 1.163.16 1.07.16 1.837 1.094 1.837 2.175v5.17c0 .62-.504 1.124-1.125 1.124H4.125A1.125 1.125 0 013 20.625v-5.17c0-1.08.768-2.014 1.837-2.174A47.78 47.78 0 015 13.12"/></svg>
+        <span class="text-[10px] font-semibold">Diet</span>
+      </button>
+    </div>
+  </nav>
+
+  <script>
+  // ═══════════════════════════════════════
+  // DATA
+  // ═══════════════════════════════════════
+
+  // ─── Exercise Library (name → gifs / tip / sets) ────────────────────────
+  const EX_LIB = {
+    // CHEST
+    'DB Bench Press (Flat)':     { sets:'4 × 10-15', kcal:40, tip:'Retract shoulder blades; lower dumbbells to chest, press to full extension.',         gifs:['https://burnfit.io/en/wp-content/uploads/sites/3/2026/01/DB_BP.gif'] },
+    'Incline DB Press':          { sets:'4 × 10-15', kcal:38, tip:'Set bench 30–45°; lower to upper chest, press explosively.',                          gifs:['https://burnfit.io/en/wp-content/uploads/sites/3/2026/01/DB_INC_BP.gif'] },
+    'DB Chest Flyes':            { sets:'4 × 12-15', kcal:28, tip:'Slight bend in elbows; open arms wide, feel deep chest stretch.',                     gifs:['https://newlife.com.cy/wp-content/uploads/2019/11/03081301-Dumbbell-Fly_Chest-FIX_360.gif'] },
+    'Push-ups':                  { sets:'4 × 10-20', kcal:25, tip:'Body straight, elbows at 45°; lower chest to floor, core braced.',                   gifs:['https://cdn.dribbble.com/userupload/29475742/file/original-2b9dfa29d2b5090a4452df9fde42d7b1.gif'] },
+    'Machine Chest Press':       { sets:'4 × 12-15', kcal:35, tip:'Seat at chest height; control the return, full range of motion.',                    gifs:['https://media.tenor.com/3bJRUkfLN3EAAAAM/supino-na-maquina.gif'] },
+    'Pec Deck / Butterfly':      { sets:'4 × 12-15', kcal:26, tip:'Keep slight bend in elbows; squeeze chest hard at peak contraction.',                gifs:['https://fitliferegime.com/wp-content/uploads/2023/06/Machine-Chest-Fly.gif'] },
+    'Cable Chest Flyes':         { sets:'4 × 12-15', kcal:26, tip:'Core tight; squeeze hands together at centre, hold 1 sec.',                          gifs:['https://www.inspireusafoundation.org/wp-content/uploads/2023/08/high-cable-fly.gif'] },
+    'Bench Dips (Chest focus)':  { sets:'4 × 10-15', kcal:30, tip:'Lean forward to shift emphasis to chest; controlled descent.',                       gifs:['https://fitnessprogramer.com/wp-content/uploads/2021/04/Triceps-Dips-on-Floor.gif'] },
+    // BACK
+    'Lat Pulldown':              { sets:'4 × 10-15', kcal:42, tip:'Lean back slightly; pull bar to upper chest, never behind neck.',                    gifs:['https://media.tenor.com/PVR9ra9tAwcAAAAM/pulley-pegada-aberta.gif'] },
+    'One-Arm DB Row':            { sets:'4 × 10-12', kcal:40, tip:'Support on bench; row to hip, full stretch at bottom.',                              gifs:['https://burnfit.io/en/wp-content/uploads/sites/3/2026/01/OA_DB_ROW.gif'] },
+    'Face Pulls':                { sets:'4 × 15-20', kcal:22, tip:'Pull to forehead level; elbows high and flared out.',                                gifs:['https://fitnessprogramer.com/wp-content/uploads/2021/02/Face-Pull.gif','https://i.pinimg.com/originals/90/21/ad/9021ad844ea99df30b37e34a7a7046a0.gif'] },
+    'Superman':                  { sets:'4 × 12-15', kcal:15, tip:'Lift arms and legs simultaneously; hold 2 sec at top.',                              gifs:['https://cdn.jefit.com/assets/img/exercises/gifs/94.gif'] },
+    'Assisted Pull-ups/Inverted':{ sets:'4 × 8-12',  kcal:38, tip:'Full range of motion; engage lats, not just arms.',                                  gifs:['https://fitnessprogramer.com/wp-content/uploads/2025/05/assisted-pull-up-machine-female.gif'] },
+    'Seated Cable Row':          { sets:'4 × 10-15', kcal:38, tip:'Chest up, pull elbows past torso, hold 1 sec at peak.',                             gifs:['https://i.makeagif.com/media/4-28-2015/ibwPMp.gif'] },
+    'Machine High Row':          { sets:'4 × 12-15', kcal:35, tip:'Lean forward slightly; pull elbows back and down, squeeze lats.',                   gifs:['https://www.inspireusafoundation.org/wp-content/uploads/2022/05/high-row.gif'] },
+    'Bent-Over DB Row':          { sets:'4 × 10-12', kcal:42, tip:'Hinge 45°, pull dumbbells to lower chest, squeeze lats.',                           gifs:['https://burnfit.io/en/wp-content/uploads/sites/3/2026/01/DB_LOW.gif'] },
+    // LEGS
+    'Bodyweight/Goblet Squats':  { sets:'4 × 12-15', kcal:55, tip:'Feet shoulder-width, knees track toes, chest tall throughout.',                     gifs:['https://fitnessprogramer.com/wp-content/uploads/2023/01/Dumbbell-Goblet-Squat.gif'] },
+    'Lying Leg Curl':            { sets:'4 × 12-15', kcal:32, tip:'Full extension then curl heels to glutes; slow on way down.',                        gifs:['https://i.pinimg.com/originals/2b/3a/b7/2b3ab7bafec66c5bfac7efd6053c2d82.gif'] },
+    'Walking Lunges':            { sets:'4 × 10/leg', kcal:48, tip:'Knee stays above ankle; keep torso upright throughout.',                            gifs:['https://fitnessprogramer.com/wp-content/uploads/2022/08/bodyweight-reverse-lunge.gif'] },
+    'Standing Calf Raises':      { sets:'4 × 15-20', kcal:18, tip:'Full range: deep stretch at bottom, high rise at top, hold.',                       gifs:['https://i.pinimg.com/originals/2f/7c/ca/2f7cca8d37c65384c1d0bd84cc0a91d1.gif'] },
+    'Leg Press Machine':         { sets:'4 × 12-15', kcal:52, tip:'Do not lock knees at top; foot placement shifts emphasis.',                         gifs:['https://media.tenor.com/yBaS_oBgidsAAAAM/gym.gif'] },
+    'Romanian Deadlift':         { sets:'4 × 10-12', kcal:55, tip:'Soft knee bend; push hips back until deep hamstring stretch.',                      gifs:['https://i.pinimg.com/originals/37/0f/5a/370f5af5a35d5a12fb5d6e42ecf55552.gif'] },
+    'Seated Leg Extension':      { sets:'4 × 12-15', kcal:28, tip:'Squeeze quads hard at top; slow controlled descent.',                               gifs:['https://burnfit.io/en/wp-content/uploads/sites/3/2026/01/SL_LEG_EXT.gif'] },
+    'Step-ups':                  { sets:'4 × 10/leg', kcal:45, tip:'Drive through heel of front foot; keep torso tall.',                                gifs:['https://www.kettlebellkings.com/cdn/shop/articles/weighted-step-up.gif?v=1731311898'] },
+    // SHOULDERS
+    'DB Shoulder Press':         { sets:'4 × 10-12', kcal:38, tip:'Elbows at 90°, press overhead to full extension; controlled descent.',              gifs:['https://pelank.com/wp-content/uploads/2025/12/Dumbbell-Shoulder-Press.gif'] },
+    'DB Lateral Raises':         { sets:'4 × 15-20', kcal:20, tip:'Slight lean, lead with elbows, stop at shoulder height; no momentum.',              gifs:['https://www.strengthlog.com/wp-content/uploads/2020/12/Dumbbell-Lateral-Raise.gif'] },
+    'Rear Delt Flyes':           { sets:'4 × 15-20', kcal:20, tip:'Hinge forward; squeeze shoulder blades together, control the descent.',             gifs:['https://fitliferegime.com/wp-content/uploads/2023/06/Seated-Rear-Delt-Fly.gif','https://fitnessprogramer.com/wp-content/uploads/2021/02/Rear-Delt-Machine-Flys.gif'] },
+    'Shrugs':                    { sets:'4 × 15-20', kcal:18, tip:'Straight up, hold 1 sec at top; no rolling motion.',                                gifs:['https://fitliferegime.com/wp-content/uploads/2023/05/Dumbbell-Shrug.gif'] },
+    'Machine Shoulder Press':    { sets:'4 × 10-12', kcal:35, tip:'Adjust seat height; full range of motion, control the negative.',                   gifs:['https://i.pinimg.com/originals/4e/c8/fb/4ec8fb732cc0e0a8003eee1ffc22b319.gif'] },
+    'DB Front Raises':           { sets:'4 × 12-15', kcal:20, tip:'Raise to eye level; avoid swinging torso for momentum.',                            gifs:['https://fitnessprogramer.com/wp-content/uploads/2021/06/Alternating-Dumbbell-Front-Raise.gif'] },
+    'Upright Rows':              { sets:'4 × 10-15', kcal:28, tip:"Elbows lead upward; bar stays close to body, don't go above chin.",                 gifs:['https://newlife.com.cy/wp-content/uploads/2019/11/01231301-Barbell-Wide-Grip-Upright-Row_Shoulders_360.gif'] },
+    // ARMS – BICEPS
+    'DB Bicep Curls':            { sets:'4 × 10-15', kcal:22, tip:'Elbows pinned to sides; full stretch at bottom, squeeze at top.',                   gifs:['https://i.pinimg.com/originals/7d/3c/de/7d3cdeed84c1c19ad372d5b25beffd08.gif'] },
+    'Hammer Curls':              { sets:'4 × 10-15', kcal:22, tip:'Neutral grip; targets brachialis and brachioradialis too.',                         gifs:['https://fitnessprogramer.com/wp-content/uploads/2021/02/Hammer-Curl.gif'] },
+    'Concentration Curls':       { sets:'4 × 12-15', kcal:18, tip:'Elbow on inner thigh; supinate wrist as you curl up.',                              gifs:['https://fitnessprogramer.com/wp-content/uploads/2021/02/Concentration-Curl.gif'] },
+    'Cable Bicep Curls':         { sets:'4 × 12-15', kcal:20, tip:'Keep elbows still; constant cable tension throughout the rep.',                     gifs:['https://i.pinimg.com/originals/f1/52/16/f15216ce06438b9ee776941c4f74dc6e.gif'] },
+    // ARMS – TRICEPS
+    'Tricep Pushdowns':          { sets:'4 × 12-15', kcal:20, tip:'Elbows locked at sides; full extension at bottom.',                                  gifs:['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRJ0JSuTojAXyI9Usl8PA4dFTVEcmZGjgtASw&s'] },
+    'Overhead Tricep Extension': { sets:'4 × 10-15', kcal:22, tip:'Dumbbell behind head; elbows close, full overhead extension.',                      gifs:['https://i.pinimg.com/originals/2c/62/ba/2c62ba80d37c94d06ad6d60f1e5445df.gif'] },
+    'Tricep Kickbacks':          { sets:'4 × 12-15', kcal:18, tip:'Hinge forward; upper arm parallel to floor, extend fully.',                         gifs:['https://app.aspira-fitness.com/api/media/4ce088ab-2fb1-4896-9897-8bd5f74bd2af'] },
+    'Bench Dips':                { sets:'4 × 10-15', kcal:30, tip:'Control the descent; elbows close to body, full extension at top.',                 gifs:['https://fitnessprogramer.com/wp-content/uploads/2022/01/Decline-Close-Grip-Bench-To-Skull-Crusher.gif','https://i.pinimg.com/originals/71/a5/8f/71a58fff86280c49002e0149f8cea3a4.gif'] },
+    'DB Front Raises (O)':       { sets:'4 × 12-15', kcal:20, tip:'Raise to eye level; avoid swinging torso for momentum. (Optional — front delts already taxed by chest days)',                    gifs:['https://fitnessprogramer.com/wp-content/uploads/2021/06/Alternating-Dumbbell-Front-Raise.gif'] },
+    'Bench Dips (O)':            { sets:'4 × 10-15', kcal:30, tip:'Control the descent; elbows close to body, full extension at top. (Optional — skip if triceps/shoulders feel fatigued from chest days)', gifs:['https://fitnessprogramer.com/wp-content/uploads/2022/01/Decline-Close-Grip-Bench-To-Skull-Crusher.gif','https://i.pinimg.com/originals/71/a5/8f/71a58fff86280c49002e0149f8cea3a4.gif'] },
+    'Incline Treadmill Walk':    { sets:'20 min',    kcal:120, tip:'Set incline 10-12%, speed 3-4 mph; do not hold rails. Best fat-burn tool for love handles — consistent steady state.',              gifs:['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVSxkoIfF6uAyTrGCkQWKtmXCfgqE2xG-zgw&s'] },
+  };
+
+  // Helper: resolve exercise names to full objects
+  function resolveEx(names) {
+    return names.map(n => ({ name: n, ...(EX_LIB[n] || { sets:'4 × 12', tip:'', gifs:[] }) }));
+  }
+
+  // Warmup / Bonus constants (same every week)
+  const WARMUP_HANG = [{ name:'Dead Hang', sets:'2 × 20-30 sec', kcal:5, tip:'Arms fully extended, engage lats slightly; relax grip between sets.', gifs:['https://media1.tenor.com/m/PfpznfyXlk8AAAAd/hang-strong.gif'] }];
+  const BONUS_PULLUP = [
+    { name:'Dead Hang',                    sets:'4 × 20-30 sec', kcal:8,  tip:'Engage lats slightly; arms fully extended, relax grip between sets.', gifs:['https://media1.tenor.com/m/PfpznfyXlk8AAAAd/hang-strong.gif'] },
+    { name:'Inverted Row',                 sets:'4 × 10-12',     kcal:35, tip:'Body straight as a plank; pull chest to bar, squeeze shoulder blades.', gifs:['https://barbend.com/wp-content/uploads/2024/01/trx-inverted-row-barbend-movement-gif-masters-1.gif','https://i.makeagif.com/media/5-05-2023/QD-4M5.gif'] },
+    { name:'Negative Pull-Up (Eccentric)', sets:'4 × 5-8 reps',  kcal:30, tip:'Jump to top position; lower yourself as slowly as possible (5–8 sec).', gifs:['https://www.powrpersonaltraining.com/wp-content/uploads/2025/09/Negative-Pull-Ups-Exercise-Demo.gif'] }
+  ];
+
+  // ─── 4-Week Rotating Plan ────────────────────────────────────────────────
+  const WORKOUT_WEEKS = [
+    { // ── Week 1 ──
+      Monday:    { name:'Chest Day A',  icon:'💪', exNames:['DB Bench Press (Flat)','Incline DB Press','DB Chest Flyes','Push-ups'], warmup:WARMUP_HANG },
+      Tuesday:   { name:'Back Day',     icon:'🏋️', exNames:['Lat Pulldown','One-Arm DB Row','Face Pulls','Superman'] },
+      Wednesday: { name:'Leg Day',      icon:'🦵', exNames:['Bodyweight/Goblet Squats','Lying Leg Curl','Walking Lunges','Standing Calf Raises'], warmup:WARMUP_HANG },
+      Thursday:  { name:'Chest Day B',  icon:'💪', exNames:['Incline DB Press','Cable Chest Flyes','Pec Deck / Butterfly','DB Chest Flyes'], warmup:WARMUP_HANG },
+      Friday:    { name:'Shoulder Day', icon:'🔱', exNames:['DB Shoulder Press','DB Lateral Raises','Rear Delt Flyes','Shrugs'], warmup:WARMUP_HANG },
+      Saturday:  { name:'Arms Day',     icon:'💥', exNames:['DB Bicep Curls','Hammer Curls','Tricep Pushdowns','Overhead Tricep Extension','Concentration Curls','Cable Bicep Curls','Tricep Kickbacks','Bench Dips (O)'], bonus:BONUS_PULLUP }
+    },
+    { // ── Week 2 ──
+      Monday:    { name:'Chest Day A',  icon:'💪', exNames:['Machine Chest Press','Pec Deck / Butterfly','Cable Chest Flyes','Bench Dips (Chest focus)'], warmup:WARMUP_HANG },
+      Tuesday:   { name:'Back Day',     icon:'🏋️', exNames:['Assisted Pull-ups/Inverted','Seated Cable Row','Machine High Row','Bent-Over DB Row'] },
+      Wednesday: { name:'Leg Day',      icon:'🦵', exNames:['Leg Press Machine','Romanian Deadlift','Seated Leg Extension','Step-ups'], warmup:WARMUP_HANG },
+      Thursday:  { name:'Chest Day B',  icon:'💪', exNames:['Incline DB Press','Machine Chest Press','DB Chest Flyes','Push-ups'], warmup:WARMUP_HANG },
+      Friday:    { name:'Shoulder Day', icon:'🔱', exNames:['Machine Shoulder Press','DB Front Raises (O)','Face Pulls','Upright Rows'], warmup:WARMUP_HANG },
+      Saturday:  { name:'Arms Day',     icon:'💥', exNames:['Cable Bicep Curls','Concentration Curls','Bench Dips (O)','Tricep Kickbacks','Hammer Curls','DB Bicep Curls','Overhead Tricep Extension','Tricep Pushdowns'], bonus:BONUS_PULLUP }
+    },
+    { // ── Week 3 ──
+      Monday:    { name:'Chest Day A',  icon:'💪', exNames:['Incline DB Press','DB Bench Press (Flat)','Pec Deck / Butterfly','Push-ups'], warmup:WARMUP_HANG },
+      Tuesday:   { name:'Back Day',     icon:'🏋️', exNames:['Lat Pulldown','Bent-Over DB Row','Machine High Row','Superman'] },
+      Wednesday: { name:'Leg Day',      icon:'🦵', exNames:['Bodyweight/Goblet Squats','Romanian Deadlift','Lying Leg Curl','Standing Calf Raises'], warmup:WARMUP_HANG },
+      Thursday:  { name:'Chest Day B',  icon:'💪', exNames:['Incline DB Press','Bench Dips (Chest focus)','Cable Chest Flyes','Pec Deck / Butterfly'], warmup:WARMUP_HANG },
+      Friday:    { name:'Shoulder Day', icon:'🔱', exNames:['DB Shoulder Press','DB Front Raises (O)','Rear Delt Flyes','Shrugs'], warmup:WARMUP_HANG },
+      Saturday:  { name:'Arms Day',     icon:'💥', exNames:['DB Bicep Curls','Cable Bicep Curls','Tricep Pushdowns','Bench Dips (O)','Hammer Curls','Concentration Curls','Overhead Tricep Extension','Tricep Kickbacks'], bonus:BONUS_PULLUP }
+    },
+    { // ── Week 4 ──
+      Monday:    { name:'Chest Day A',  icon:'💪', exNames:['DB Bench Press (Flat)','Machine Chest Press','Cable Chest Flyes','Bench Dips (Chest focus)'], warmup:WARMUP_HANG },
+      Tuesday:   { name:'Back Day',     icon:'🏋️', exNames:['Assisted Pull-ups/Inverted','One-Arm DB Row','Seated Cable Row','Face Pulls'] },
+      Wednesday: { name:'Leg Day',      icon:'🦵', exNames:['Leg Press Machine','Walking Lunges','Seated Leg Extension','Step-ups'], warmup:WARMUP_HANG },
+      Thursday:  { name:'Chest Day B',  icon:'💪', exNames:['Incline DB Press','Machine Chest Press','DB Chest Flyes','Bench Dips (Chest focus)'], warmup:WARMUP_HANG },
+      Friday:    { name:'Shoulder Day', icon:'🔱', exNames:['Machine Shoulder Press','DB Lateral Raises','Upright Rows','Face Pulls'], warmup:WARMUP_HANG },
+      Saturday:  { name:'Arms Day',     icon:'💥', exNames:['Hammer Curls','Cable Bicep Curls','Overhead Tricep Extension','Bench Dips (O)','DB Bicep Curls','Concentration Curls','Tricep Pushdowns','Tricep Kickbacks'], bonus:BONUS_PULLUP }
+    }
+  ];
+
+  // Program start date: Monday Mar 30 2026 (Week 1, Day 1)
+  const PROGRAM_START = new Date('2026-03-30T00:00:00');
+
+  function getAutoWeekIdx() {
+    const now = new Date();
+    // Find this week's Monday
+    const dow = now.getDay(); // 0=Sun
+    const daysToMon = (dow === 0 ? -6 : 1 - dow);
+    const thisMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysToMon);
+    const weeksDiff = Math.floor((thisMonday - PROGRAM_START) / (7 * 24 * 60 * 60 * 1000));
+    if (weeksDiff < 0) return 0; // before program start → show W1
+    return Math.min(weeksDiff, 13); // 0-13
+  }
+
+  // Helper: get the full day plan for a given week index + day name
+  function getWeekDayPlan(weekIdx, dayName) {
+    const w = WORKOUT_WEEKS[weekIdx % 4];
+    if (!w || !w[dayName]) return null;
+    const d = w[dayName];
+    return {
+      name:     d.name,
+      icon:     d.icon,
+      exercises: resolveEx(d.exNames),
+      warmup:   d.warmup  || null,
+      bonus:    d.bonus   || null
+    };
+  }
+
+  const PULLUP_PROG = [
+    { name:'Dead Hang',                    sets:'4 × 20-30 sec', kcal:8,  tip:'Engage lats slightly; arms fully extended, relax grip between sets.',   gifs:['https://media1.tenor.com/m/PfpznfyXlk8AAAAd/hang-strong.gif'] },
+    { name:'Scapular Pull-Up',             sets:'4 × 10 reps',   kcal:15, tip:'Arms straight; retract shoulder blades to initiate — no arm bend.',     gifs:['https://media1.tenor.com/m/K-UZrgp-1vQAAAAd/scapular-pulls.gif'] },
+    { name:'Inverted Row',                 sets:'4 × 10-12',     kcal:35, tip:'Body straight as a plank; pull chest to bar, squeeze shoulder blades.',  gifs:['https://barbend.com/wp-content/uploads/2024/01/trx-inverted-row-barbend-movement-gif-masters-1.gif','https://i.makeagif.com/media/5-05-2023/QD-4M5.gif'] },
+    { name:'Negative Pull-Up (Eccentric)', sets:'4 × 5-8 reps',  kcal:30, tip:'Jump to top position; lower yourself as slowly as possible (5–8 sec).', gifs:['https://www.powrpersonaltraining.com/wp-content/uploads/2025/09/Negative-Pull-Ups-Exercise-Demo.gif'] }
+  ];
+
+  const CORE_ROTATION = {
+    Monday:    ['Bird Dog','Twisting Crunch','Decline Bench Abdominal Reach','Side Crunch With Leg Lift','Reach And Catch'],
+    Tuesday:   ['Heel Touches','Abdominal Hip Thrust','Alternating Lying Leg Raise','Lying Leg Raise With Hip Thrust','Hollow Hold'],
+    Wednesday: ['Russian Twists','Decline Weighted Twist','Side Crunch With Leg Lift','Half Kneeling Pallof Press','Heel Touches'],
+    Thursday:  ['Jackknife On Bench','Abdominal Hip Thrust','Seated Cable Crunch','Decline Bench Leg Raise','Stir the Pot on Exercise Ball'],
+    Friday:    ['Twisting Crunch','Abdominal Hip Thrust','Side Crunch With Leg Lift','Decline Bench Abdominal Reach','Decline Bench Alternating Knee Raise'],
+    Saturday:  ['Russian Twists','Decline Weighted Twist','Decline Bench Sit Up With Twist','Half Kneeling Pallof Press','Twisting Cable Crunch']
+  };
+
+  const CORE_LIB = [
+    // ── Legacy exercises — used in Weeks 1–3 only ────────────────────────────
+    { name:'Plank',              d:'Easy',        dur:'30–60 sec',   kcal:8,  tip:'Straight line head to heel; squeeze abs and glutes.',             gifs:['https://cdn.jefit.com/assets/img/exercises/gifs/631.gif'] },
+    { name:'Dead Bug',           d:'Moderate',    dur:'4 × 10 reps', kcal:10, tip:'Lower back glued to floor the entire movement.',                  gifs:['https://fitnessprogramer.com/wp-content/uploads/2022/12/Pilates-exercises-Dead-Bug.gif'] },
+    { name:'Side Plank',         d:'Moderate',    dur:'30 sec/side', kcal:10, tip:'Stack or stagger feet; keep hips lifted, do not sag.',            gifs:['https://burnfit.io/en/wp-content/uploads/sites/3/2026/01/SIDE_PLANK.gif'] },
+    { name:'Bicycle Crunches',   d:'Moderate',    dur:'4 × 20 reps', kcal:15, tip:'Slow rotation; elbow to opposite knee, extend other leg.',        gifs:['https://hips.hearstapps.com/hmg-prod/images/workouts/2016/08/bicycle-1472058017.gif'] },
+    { name:'Flutter Kicks',      d:'Moderate',    dur:'4 × 30 sec',  kcal:12, tip:'Small fast kicks; lower back pressed to floor.',                  gifs:['https://cdn.jefit.com/assets/img/exercises/gifs/198.gif'] },
+    { name:'Butt Bridge',        d:'Easy',        dur:'4 × 15 reps', kcal:10, tip:'Drive hips up, squeeze glutes at top, controlled down.',          gifs:['https://cdn.jefit.com/assets/img/exercises/gifs/194.gif'] },
+    { name:'Crunches',           d:'Easy',        dur:'4 × 20 reps', kcal:10, tip:'Curl shoulder blades off floor; hands behind ears, not neck.',    gifs:['https://burnfit.io/en/wp-content/uploads/sites/3/2026/01/CRUNCH.gif'] },
+    { name:'Superman',           d:'Easy',        dur:'4 × 12 reps', kcal:8,  tip:'Lift arms and legs simultaneously; hold 2 sec at top.',           gifs:['https://cdn.jefit.com/assets/img/exercises/gifs/94.gif'] },
+    { name:'Lying Leg Raises',   d:'Challenging', dur:'4 × 12 reps', kcal:15, tip:'Lower back flat; lower legs slowly without touching floor.',      gifs:['https://cdn.jefit.com/assets/img/exercises/gifs/306.gif'] },
+    { name:'V-Ups',              d:'Challenging', dur:'4 × 12 reps', kcal:18, tip:'Raise legs and torso simultaneously; touch hands to feet.',       gifs:['https://burnfit.io/en/wp-content/uploads/sites/3/2026/02/V-UP.gif'] },
+    { name:'Mountain Climbers',  d:'Challenging', dur:'4 × 30 sec',  kcal:20, tip:'Slow tempo; hips level, full knee drive to chest.',               gifs:['https://cdn.jefit.com/assets/img/exercises/gifs/484.gif'] },
+    // ── Kept from previous plan ───────────────────────────────────────────────
+    { name:'Bird Dog',                         d:'Easy',        dur:'4 × 10/side',  kcal:8,   tip:'Opposite arm and leg; keep hips perfectly level.',                                   gifs:['https://media.suckhoecong.vn/Images/Uploaded/Share/2021/05/12/bird-dog-ok.gif'] },
+    { name:'Heel Touches',                     d:'Easy',        dur:'4 × 20 reps',  kcal:10,  tip:'Crunch sideways to touch alternating heels; back stays flat.',                       gifs:['https://burnfit.io/en/wp-content/uploads/sites/3/2026/01/HEEL_TOUCH.gif'] },
+    { name:'Russian Twists',                   d:'Moderate',    dur:'4 × 20 reps',  kcal:15,  tip:'Lean back 45°; add a weight plate or dumbbell for max oblique burn. Twist from torso, not arms.', gifs:['https://fitnessprogramer.com/wp-content/uploads/2021/02/Russian-Twist.gif','https://www.kettlebellkings.com/cdn/shop/articles/russian-twist_cf5b5524-a334-4364-9cb9-54b5a04962d9.gif?v=1739267488'] },
+    { name:'Hollow Hold',                      d:'Challenging', dur:'4 × 30 sec',   kcal:15,  tip:'Dish shape: arms by ears, legs straight, lower back rounded.',                       gifs:['https://i.pinimg.com/originals/f4/55/9d/f4559d43b1a9f0879954cea2a536452c.gif','https://fitcron.com/wp-content/uploads/2024/05/12461301-Hollow-Hold_Waist_720.gif'] },
+    { name:'Incline Treadmill Walk',           d:'Easy',        dur:'20 min',        kcal:120, tip:'Set incline 10-12%, speed 3-4 mph; do not hold rails. Best fat-burn tool for love handles — consistent steady state.', gifs:['https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSVSxkoIfF6uAyTrGCkQWKtmXCfgqE2xG-zgw&s'] },
+    // ── Upper Abs ────────────────────────────────────────────────────────────
+    { name:'Twisting Crunch',                  d:'Easy',        dur:'4 × 15 reps',  kcal:15,  tip:'Curl shoulder to opposite knee; keep lower back pressed to floor throughout.',       gifs:['https://fitnessprogramer.com/wp-content/uploads/2022/01/Bicycle-Twisting-Crunch.gif'] },
+    { name:'Decline Bench Abdominal Reach',    d:'Easy',        dur:'4 × 12 reps',  kcal:15,  tip:'On decline bench; reach hands toward feet at the top, controlled slow descent.',     gifs:['https://fitnessprogramer.com/wp-content/uploads/2021/05/Decline-Sit-up.gif'] },
+    { name:'Jackknife On Bench',               d:'Moderate',    dur:'4 × 12 reps',  kcal:18,  tip:'Seated on edge; extend legs out straight, draw knees to chest simultaneously.',      gifs:['https://cdn.jefit.com/assets/img/exercises/gifs/343.gif'] },
+    { name:'Seated Cable Crunch',              d:'Moderate',    dur:'4 × 15 reps',  kcal:15,  tip:'Kneel facing cable; pull elbows down to knees — crunch from abs, not hips.',         gifs:['https://i.pinimg.com/originals/c6/71/33/c6713366be9ae6d27df51639c7bdd5cb.gif'] },
+    // ── Lower Abs ────────────────────────────────────────────────────────────
+    { name:'Abdominal Hip Thrust',             d:'Easy',        dur:'4 × 15 reps',  kcal:12,  tip:'Lying flat, legs vertical; drive hips straight up toward ceiling, lower slowly.',    gifs:['https://fitnessprogramer.com/wp-content/uploads/2022/04/bodyweight-hip-thrust.gif'] },
+    { name:'Alternating Lying Leg Raise',      d:'Moderate',    dur:'4 × 12/side',  kcal:15,  tip:'Lower back flat; raise one leg at a time with a slow controlled lowering phase.',    gifs:['https://fitnessprogramer.com/wp-content/uploads/2022/08/Alternate-Leg-Raises.gif'] },
+    { name:'Lying Leg Raise With Hip Thrust',  d:'Moderate',    dur:'4 × 12 reps',  kcal:15,  tip:'Raise legs to 90°, then thrust hips up; lower slowly — do not touch floor at bottom.', gifs:['https://fitnessprogramer.com/wp-content/uploads/2021/05/Incline-Leg-Hip-Raise.gif'] },
+    { name:'Decline Bench Leg Raise',          d:'Moderate',    dur:'4 × 12 reps',  kcal:15,  tip:'On decline bench; lower legs slowly, pause just above the pad — never let them drop.', gifs:['https://i.pinimg.com/originals/21/0f/65/210f6523c0a1948dce7a1ef3e3055573.gif'] },
+    { name:'Decline Bench Alternating Knee Raise', d:'Moderate', dur:'4 × 12/side', kcal:15,  tip:'On decline bench; alternate bringing each knee to chest with full control.',          gifs:['https://www.jefit.com/_next/image?url=https%3A%2F%2Fwww.jefit.com%2Fimages%2Fexercises%2F960_590%2F3882.jpg&w=1920&q=75'] },
+    // ── Obliques & Love Handles ───────────────────────────────────────────────
+    { name:'Side Crunch With Leg Lift',        d:'Easy',        dur:'4 × 15/side',  kcal:15,  tip:'Lie on side; lift both legs and crunch sideways simultaneously for peak oblique hit.', gifs:['https://i.pinimg.com/originals/28/91/c5/2891c580549574ab7247ba17095d2f87.gif'] },
+    { name:'Decline Weighted Twist',           d:'Moderate',    dur:'4 × 15 reps',  kcal:18,  tip:'On decline bench, hold weight plate; rotate fully each side and pause at peak.',      gifs:['https://cdn.jefit.com/assets/img/exercises/gifs/976.gif'] },
+    { name:'Half Kneeling Pallof Press',       d:'Moderate',    dur:'4 × 10/side',  kcal:12,  tip:'Anti-rotation: press cable straight out, hold 2 sec, resist the sideways pull.',      gifs:['https://fitnessprogramer.com/wp-content/uploads/2022/02/Cable-Half-Kneeling-Pallof-Press.gif'] },
+    { name:'Twisting Cable Crunch',            d:'Moderate',    dur:'4 × 15 reps',  kcal:15,  tip:'Kneel at cable; crunch and rotate elbow toward opposite knee on each rep.',           gifs:['https://cdn.jefit.com/assets/img/exercises/gifs/789.gif'] },
+    { name:'Decline Bench Sit Up With Twist',  d:'Moderate',    dur:'4 × 12 reps',  kcal:18,  tip:'On decline bench; sit up fully then rotate to one side — alternate sides each rep.',  gifs:['https://fitnessprogramer.com/wp-content/uploads/2021/05/Decline-Sit-up.gif'] },
+    // ── Stability & Full Core ─────────────────────────────────────────────────
+    { name:'Reach And Catch',                  d:'Easy',        dur:'4 × 12 reps',  kcal:10,  tip:'Lying flat; reach arms overhead, "catch" at the top and crunch — pure mind-muscle.',  gifs:['https://cdn.jefit.com/assets/img/exercises/gifs/968.gif'] },
+    { name:'Stir the Pot on Exercise Ball',    d:'Moderate',    dur:'4 × 30 sec',   kcal:12,  tip:'Forearms on ball in plank position; make small circles — resist rotation throughout.', gifs:['https://i.pinimg.com/originals/ec/55/d2/ec55d23a3a020adb2588fa626b73d574.gif'] },
+  ];
+
+  // ─── Core Finisher — Weeks 1–3 (Mar 30 – Apr 19): original plan ────────────
+  const CORE_FINISHER_LEGACY = [
+    { // ── Week 1 · Foundation ──
+      Monday:    ['Plank','Dead Bug','Russian Twists','Side Plank','Bicycle Crunches'],
+      Tuesday:   ['Bird Dog','Flutter Kicks','Russian Twists','Side Plank','Heel Touches'],
+      Wednesday: ['Butt Bridge','Heel Touches','Russian Twists','Side Plank','Bicycle Crunches'],
+      Thursday:  ['Crunches','Dead Bug','Russian Twists','Side Plank','Heel Touches'],
+      Friday:    ['Superman','Lying Leg Raises','Russian Twists','Side Plank','Bicycle Crunches'],
+      Saturday:  ['V-Ups','Mountain Climbers','Russian Twists','Side Plank','Incline Treadmill Walk']
+    },
+    { // ── Week 2 · Build ──
+      Monday:    ['Mountain Climbers','Lying Leg Raises','Russian Twists','Side Plank','Bicycle Crunches'],
+      Tuesday:   ['Dead Bug','Hollow Hold','Russian Twists','Side Plank','Flutter Kicks'],
+      Wednesday: ['Side Plank','Bicycle Crunches','Russian Twists','Mountain Climbers','Lying Leg Raises'],
+      Thursday:  ['Dead Bug','Hollow Hold','Russian Twists','Side Plank','Lying Leg Raises'],
+      Friday:    ['Hollow Hold','Dead Bug','Russian Twists','Side Plank','Mountain Climbers'],
+      Saturday:  ['V-Ups','Hollow Hold','Russian Twists','Side Plank','Incline Treadmill Walk']
+    },
+    { // ── Week 3 · Intensity ──
+      Monday:    ['Mountain Climbers','V-Ups','Russian Twists','Side Plank','Hollow Hold'],
+      Tuesday:   ['Dead Bug','V-Ups','Russian Twists','Side Plank','Hollow Hold'],
+      Wednesday: ['Mountain Climbers','Lying Leg Raises','Russian Twists','Side Plank','Bicycle Crunches'],
+      Thursday:  ['Hollow Hold','V-Ups','Russian Twists','Side Plank','Lying Leg Raises'],
+      Friday:    ['Hollow Hold','Mountain Climbers','Russian Twists','Side Plank','V-Ups'],
+      Saturday:  ['V-Ups','Mountain Climbers','Russian Twists','Side Plank','Incline Treadmill Walk']
+    }
+  ];
+
+  // ─── Core Finisher — Week 4 onwards (Apr 20+): new abs & obliques plan ──────
+  // 5 exercises/day (6 on Sat incl. Incline Treadmill Walk) · 4 sets · 60s rest
+  // W4→[0], W5→[1], W6→[2], W7→[3], W8→[0] … recurring through W14
+  const CORE_FINISHER_ABS = [
+    { // ── Abs W1 · Foundation — Main W4 (Apr 20), W8, W12 ──
+      Monday:    ['Bird Dog','Twisting Crunch','Decline Bench Abdominal Reach','Side Crunch With Leg Lift','Reach And Catch'],
+      Tuesday:   ['Heel Touches','Abdominal Hip Thrust','Alternating Lying Leg Raise','Lying Leg Raise With Hip Thrust','Hollow Hold'],
+      Wednesday: ['Russian Twists','Decline Weighted Twist','Side Crunch With Leg Lift','Half Kneeling Pallof Press','Heel Touches'],
+      Thursday:  ['Jackknife On Bench','Abdominal Hip Thrust','Seated Cable Crunch','Decline Bench Leg Raise','Stir the Pot on Exercise Ball'],
+      Friday:    ['Twisting Crunch','Abdominal Hip Thrust','Side Crunch With Leg Lift','Decline Bench Abdominal Reach','Decline Bench Alternating Knee Raise'],
+      Saturday:  ['Russian Twists','Decline Weighted Twist','Decline Bench Sit Up With Twist','Half Kneeling Pallof Press','Twisting Cable Crunch','Incline Treadmill Walk']
+    },
+    { // ── Abs W2 · Build — Main W5, W9, W13 ──
+      Monday:    ['Hollow Hold','Twisting Crunch','Jackknife On Bench','Side Crunch With Leg Lift','Half Kneeling Pallof Press'],
+      Tuesday:   ['Heel Touches','Lying Leg Raise With Hip Thrust','Decline Bench Alternating Knee Raise','Abdominal Hip Thrust','Stir the Pot on Exercise Ball'],
+      Wednesday: ['Russian Twists','Decline Weighted Twist','Decline Bench Sit Up With Twist','Side Crunch With Leg Lift','Twisting Cable Crunch'],
+      Thursday:  ['Decline Bench Abdominal Reach','Abdominal Hip Thrust','Hollow Hold','Lying Leg Raise With Hip Thrust','Reach And Catch'],
+      Friday:    ['Bird Dog','Twisting Crunch','Alternating Lying Leg Raise','Decline Weighted Twist','Jackknife On Bench'],
+      Saturday:  ['Russian Twists','Decline Bench Sit Up With Twist','Decline Weighted Twist','Side Crunch With Leg Lift','Half Kneeling Pallof Press','Incline Treadmill Walk']
+    },
+    { // ── Abs W3 · Intensity — Main W6, W10, W14 ──
+      Monday:    ['Hollow Hold','Decline Bench Abdominal Reach','Side Crunch With Leg Lift','Twisting Cable Crunch','Decline Bench Sit Up With Twist'],
+      Tuesday:   ['Decline Bench Leg Raise','Lying Leg Raise With Hip Thrust','Alternating Lying Leg Raise','Abdominal Hip Thrust','Stir the Pot on Exercise Ball'],
+      Wednesday: ['Russian Twists','Decline Weighted Twist','Decline Bench Sit Up With Twist','Side Crunch With Leg Lift','Twisting Cable Crunch'],
+      Thursday:  ['Jackknife On Bench','Hollow Hold','Seated Cable Crunch','Decline Bench Alternating Knee Raise','Reach And Catch'],
+      Friday:    ['Decline Bench Abdominal Reach','Abdominal Hip Thrust','Decline Weighted Twist','Lying Leg Raise With Hip Thrust','Twisting Crunch'],
+      Saturday:  ['Russian Twists','Decline Bench Sit Up With Twist','Decline Weighted Twist','Half Kneeling Pallof Press','Side Crunch With Leg Lift','Incline Treadmill Walk']
+    },
+    { // ── Abs W4 · Peak — Main W7, W11 ──
+      Monday:    ['Hollow Hold','Twisting Cable Crunch','Decline Bench Sit Up With Twist','Side Crunch With Leg Lift','Jackknife On Bench'],
+      Tuesday:   ['Decline Bench Leg Raise','Lying Leg Raise With Hip Thrust','Abdominal Hip Thrust','Decline Bench Alternating Knee Raise','Stir the Pot on Exercise Ball'],
+      Wednesday: ['Russian Twists','Decline Weighted Twist','Decline Bench Sit Up With Twist','Twisting Cable Crunch','Side Crunch With Leg Lift'],
+      Thursday:  ['Jackknife On Bench','Seated Cable Crunch','Hollow Hold','Lying Leg Raise With Hip Thrust','Decline Bench Abdominal Reach'],
+      Friday:    ['Decline Bench Sit Up With Twist','Abdominal Hip Thrust','Russian Twists','Twisting Crunch','Decline Bench Alternating Knee Raise'],
+      Saturday:  ['Russian Twists','Decline Bench Sit Up With Twist','Decline Weighted Twist','Twisting Cable Crunch','Half Kneeling Pallof Press','Incline Treadmill Walk']
+    }
+  ];
+
+  // Returns the correct core finisher array for a given weekIdx (0-based)
+  function getCoreFinisher(weekIdx, dayName) {
+    if (weekIdx < 3) return CORE_FINISHER_LEGACY[weekIdx]?.[dayName];
+    return CORE_FINISHER_ABS[(weekIdx - 3) % 4]?.[dayName];
+  }
+
+  const BREAKFAST = [
+    { name:'Poha + Peanuts',             cal:'~260 kcal', icon:'🌾', note:'Monday breakfast — peanuts add protein' },
+    { name:'Upma + Peanuts',             cal:'~250 kcal', icon:'🥣', note:'Tuesday breakfast — semolina base' },
+    { name:'Egg White (5) + Whole Egg',  cal:'~180 kcal', icon:'🥚', note:'Wednesday breakfast — high protein' },
+    { name:'Besan Chilla + Chutney',     cal:'~200 kcal', icon:'🫓', note:'Thursday breakfast — 2 chillas' },
+    { name:'Vermicelli',                 cal:'~240 kcal', icon:'🍜', note:'Friday breakfast — light & filling' },
+    { name:'Bread + Veggies Sandwich',   cal:'~280 kcal', icon:'🥪', note:'Saturday breakfast — 2 slices' },
+    { name:'Egg Bhurji + 2 Bread',       cal:'~320 kcal', icon:'🍳', note:'Sunday breakfast — 2–3 eggs, minimal oil' }
+  ];
+
+  const MEAL_PLAN = {
+    Monday:    { breakfast:'Poha + Peanuts',                 lunch:'Dal + 2 Roti + Sabzi + Salad', dinner:'Dal + 1 Roti + Sabzi + Salad' },
+    Tuesday:   { breakfast:'Upma + Peanuts',                 lunch:'Dal + 2 Roti + Sabzi + Salad', dinner:'Dal + 1 Roti + Sabzi + Salad' },
+    Wednesday: { breakfast:'Egg White (5) + Whole Egg (1)',  lunch:'Dal + 2 Roti + Sabzi + Salad', dinner:'Dal + 1 Roti + Sabzi + Salad' },
+    Thursday:  { breakfast:'Besan Chilla + Chutney',         lunch:'Dal + 2 Roti + Sabzi + Salad', dinner:'Dal + 1 Roti + Sabzi + Salad' },
+    Friday:    { breakfast:'Vermicelli',                     lunch:'Dal + 2 Roti + Sabzi + Salad', dinner:'Dal + 1 Roti + Sabzi + Salad' },
+    Saturday:  { breakfast:'2 Slice Bread + Veggies Sandwich', lunch:'Dal + 1 Roti + Rice + Sabzi', dinner:'Grilled Chicken + Grilled Veggies' },
+    Sunday:    { breakfast:'Egg White (3) + Whole Egg (1) Bhurji + 2 Bread', lunch:'Dal + 1 Roti + Rice + Sabzi',  dinner:'Grilled Chicken + Grilled Veggies' }
+  };
+
+  // ═══════════════════════════════════════
+  // STATE
+  // ═══════════════════════════════════════
+
+  const today     = new Date();
+  const todayName = today.toLocaleDateString('en-US', { weekday:'long' });
+  const dateKey   = today.toISOString().split('T')[0];
+  const WK_DAYS   = ['Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday'];
+  let activeTab        = 'home';
+  let activeWkDay      = WK_DAYS.includes(todayName) ? todayName : 'Monday';
+  let activeWeekIdx    = getAutoWeekIdx(); // 0-13
+  let activeCoreFilter = 'All';
+  let activeDietDay    = WK_DAYS.includes(todayName) ? todayName : 'Monday';
+
+  // ═══════════════════════════════════════
+  // LOCALSTORAGE
+  // ═══════════════════════════════════════
+
+  function getProgress() { try { return JSON.parse(localStorage.getItem('fitnessProgress')||'{}'); } catch(e){ return {}; } }
+  function setDone(type, idx, done) {
+    const all = getProgress();
+    if (!all[dateKey]) all[dateKey] = {};
+    const k = type+'_'+idx;
+    if (done) all[dateKey][k]=true; else delete all[dateKey][k];
+    localStorage.setItem('fitnessProgress', JSON.stringify(all));
+  }
+  function isDone(type, idx) { const all=getProgress(); return !!(all[dateKey]&&all[dateKey][type+'_'+idx]); }
+  function doneCount(type, total) { let n=0; for(let i=0;i<total;i++) if(isDone(type,i)) n++; return n; }
+
+  // ═══════════════════════════════════════
+  // MODAL
+  // ═══════════════════════════════════════
+
+  let modalGifs = [], modalGifActive = 0;
+
+  function openModal(currentGif, allGifs, activeIdx, name, sets, tip) {
+    modalGifs = allGifs && allGifs.length ? allGifs : [currentGif];
+    modalGifActive = activeIdx || 0;
+    const img = document.getElementById('modal-gif');
+    document.getElementById('modal-fallback').style.display = 'none';
+    img.style.display = 'block';
+    img.src = currentGif;
+    document.getElementById('modal-name').textContent = name || '';
+    document.getElementById('modal-sets').textContent = sets || '';
+    document.getElementById('modal-tip').textContent  = tip  || '';
+    const showNav = modalGifs.length > 1;
+    document.getElementById('modal-prev').style.display = showNav ? 'flex' : 'none';
+    document.getElementById('modal-next').style.display = showNav ? 'flex' : 'none';
+    renderModalDots();
+    document.getElementById('gif-modal').style.display = 'block';
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.getElementById('gif-modal').style.display = 'none';
+    document.getElementById('modal-gif').src = '';
+    document.body.style.overflow = '';
+  }
+  function modalNav(dir) {
+    modalGifActive = (modalGifActive + dir + modalGifs.length) % modalGifs.length;
+    const img = document.getElementById('modal-gif');
+    img.style.display = 'block';
+    document.getElementById('modal-fallback').style.display = 'none';
+    img.src = modalGifs[modalGifActive];
+    renderModalDots();
+  }
+  function renderModalDots() {
+    document.getElementById('modal-dots').innerHTML = modalGifs.length > 1
+      ? modalGifs.map((_,i) =>
+          `<span style="width:7px;height:7px;border-radius:50%;background:${i===modalGifActive?'#f97316':'#444'};display:inline-block;transition:background .2s"></span>`
+        ).join('')
+      : '';
+  }
+  document.addEventListener('keydown', e => { if(e.key==='Escape') closeModal(); });
+
+  // ═══════════════════════════════════════
+  // CARD BUILDER
+  // ═══════════════════════════════════════
+
+  function heroGifFallback(img) {
+    img.onerror = null;
+    const div = document.createElement('div');
+    div.className = 'hero-fallback';
+    div.innerHTML = '<span style="font-size:2.5rem">🎥</span><span style="font-size:0.7rem;color:#6b7280">GIF not available</span>';
+    img.parentNode.replaceChild(div, img);
+  }
+
+  function switchGif(blockEl, slotIndex) {
+    const card = blockEl.querySelector('.hero-wrap');
+    if (!card) return;
+    const gifs = card.dataset.gifs.split('|').filter(Boolean);
+    if (slotIndex < 0 || slotIndex >= gifs.length) return;
+    const img = card.querySelector('.hero-gif');
+    if (img) { img.classList.add('gif-shimmer'); img.src = ''; setTimeout(()=>{ img.src = gifs[slotIndex]; }, 20); }
+    card.dataset.gifActive = slotIndex;
+    blockEl.querySelectorAll('.gif-strip-thumb').forEach((t,i) => t.classList.toggle('active', i===slotIndex));
+  }
+
+  function findExercise(type, idx) {
+    if (type === 'workout') {
+      const plan = getWeekDayPlan(activeWeekIdx, activeWkDay);
+      return plan?.exercises[idx];
+    }
+    if (type === 'pullup')  return PULLUP_PROG[idx];
+    if (type === 'warmup') {
+      const plan = getWeekDayPlan(activeWeekIdx, activeWkDay);
+      return plan?.warmup?.[idx];
+    }
+    if (type === 'bonus') {
+      const plan = getWeekDayPlan(activeWeekIdx, activeWkDay);
+      return plan?.bonus?.[idx];
+    }
+    if (type === 'core_today') {
+      const names = CORE_ROTATION[todayName];
+      if (!names) return null;
+      return CORE_LIB.find(e => e.name === names[idx]) || { name: names[idx], sets:'', tip:'', gifs:[] };
+    }
+    if (type === 'corefinisher') {
+      const names = getCoreFinisher(activeWeekIdx, activeWkDay);
+      if (!names) return null;
+      return CORE_LIB.find(e => e.name === names[idx]) || { name: names[idx], sets:'4 × 30 sec', tip:'', gifs:[], d:'Moderate' };
+    }
+    return CORE_LIB[idx];
+  }
+
+  function exerciseCard(type, ex, idx) {
+    const done     = isDone(type, idx);
+    const dur      = ex.dur || ex.sets || '';
+    const gifs     = ex.gifs && ex.gifs.length ? ex.gifs : (ex.gif ? [ex.gif] : ['']);
+    const mainGif  = gifs[0] || '';
+    const hasMulti = gifs.length > 1;
+    const diffBadge = ex.d
+      ? `<span class="badge-${ex.d.toLowerCase()} text-xs px-2 py-0.5 rounded-full font-bold inline-block">${ex.d}</span>`
+      : '';
+
+    const stripHTML = hasMulti ? `<div class="gif-strip">
+      ${gifs.map((g,i)=>`<img src="${g}" class="gif-strip-thumb${i===0?' active':''}" data-gif-slot="${i}" loading="lazy" onerror="this.style.display='none'" alt="View ${i+1}">`).join('')}
+      <span class="text-[#6b7280] text-xs ml-1 flex-shrink-0">Tap to switch view</span>
+    </div>` : '';
+
+    // Encode gifs for data attribute (pipe-separated, no escaping needed for valid URLs)
+    const gifsEncoded = gifs.join('|');
+
+    return `<div class="ex-block${done?' done-card':''}">
+  <div class="hero-wrap" data-type="${type}" data-idx="${idx}"
+       data-gifs="${gifsEncoded.replace(/"/g,'&quot;')}" data-gif-active="0">
+    <div class="hero-done-tint"></div>
+    <img class="hero-gif gif-shimmer" src="${mainGif}" alt="${ex.name}" loading="lazy"
+         onload="this.classList.remove('gif-shimmer')"
+         onerror="heroGifFallback(this)">
+    <div class="hero-overlay">
+      <p class="font-black text-white text-base leading-tight${done?' done-name':''}">${ex.name}</p>
+      <div class="flex items-center gap-2 mt-0.5">
+        <p class="text-[#f97316] text-xs font-bold">${dur}</p>
+        ${ex.kcal ? `<span class="text-[#facc15] text-xs font-bold">· ~${ex.kcal} kcal</span>` : ''}
+      </div>
+      ${diffBadge ? `<div class="mt-1">${diffBadge}</div>` : ''}
+      <p class="text-gray-300/80 text-xs mt-1 leading-snug">${ex.tip||''}</p>
+    </div>
+  </div>${stripHTML}
+</div>`;
+  }
+
+  function sectionLabel(text, color) {
+    return `<div class="flex items-center gap-2 pt-1">
+      <span class="w-1 h-4 rounded-full" style="background:${color};flex-shrink:0"></span>
+      <span class="text-xs font-black uppercase tracking-widest" style="color:${color}">${text}</span>
+    </div>`;
+  }
+
+  // ═══════════════════════════════════════
+  // EVENT DELEGATION
+  // ═══════════════════════════════════════
+
+  function setupGifClicks(containerId) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.addEventListener('click', function(e) {
+      // Strip thumb → switch GIF
+      const thumb = e.target.closest('.gif-strip-thumb');
+      if (thumb) {
+        e.stopPropagation();
+        const block = thumb.closest('.ex-block');
+        if (block) switchGif(block, parseInt(thumb.dataset.gifSlot));
+        return;
+      }
+      // Checkbox label → don't open modal
+      if (e.target.closest('.hero-check')) return;
+      // Hero wrap click → open modal
+      const wrap = e.target.closest('.hero-wrap');
+      if (!wrap) return;
+      const gifsArr  = wrap.dataset.gifs.split('|').filter(Boolean);
+      const active   = parseInt(wrap.dataset.gifActive || 0);
+      const type     = wrap.dataset.type;
+      const idx      = parseInt(wrap.dataset.idx);
+      const ex       = findExercise(type, idx);
+      if (!ex) return;
+      openModal(gifsArr[active]||'', gifsArr, active, ex.name, ex.dur||ex.sets||'', ex.tip||'');
+    });
+  }
+
+  function setupCheckboxes(containerId) {
+    const el = document.getElementById(containerId);
+    if (!el) return;
+    el.addEventListener('change', function(e) {
+      if (!e.target.matches('input[type=checkbox]')) return;
+      const type = e.target.dataset.type;
+      const idx  = parseInt(e.target.dataset.idx);
+      setDone(type, idx, e.target.checked);
+      const block  = e.target.closest('.ex-block');
+      const nameEl = block && block.querySelector('.font-black');
+      if (block) {
+        block.classList.toggle('done-card', e.target.checked);
+        if (nameEl) nameEl.classList.toggle('done-name', e.target.checked);
+      }
+      // (no full re-render needed — card state updates in-place)
+    });
+  }
+
+  // ═══════════════════════════════════════
+  // HOME (merged with Workout)
+  // ═══════════════════════════════════════
+
+  function getWorkoutDate(weekIdx, dayName) {
+    const dayOffset = { Monday:0, Tuesday:1, Wednesday:2, Thursday:3, Friday:4, Saturday:5, Sunday:6 };
+    const monday = new Date(PROGRAM_START.getTime() + weekIdx * 7 * 24 * 60 * 60 * 1000);
+    const date   = new Date(monday.getTime() + (dayOffset[dayName] || 0) * 24 * 60 * 60 * 1000);
+    return date.toLocaleDateString('en-US', { month:'short', day:'numeric', year:'numeric' });
+  }
+
+  function renderHome() {
+    const dateEl = document.getElementById('home-date');
+    if (dateEl) dateEl.textContent =
+      today.toLocaleDateString('en-US', { weekday:'short', month:'short', day:'numeric' });
+    renderWorkout(activeWkDay);
+  }
+
+  // ═══════════════════════════════════════
+  // WORKOUT
+  // ═══════════════════════════════════════
+
+  function renderWorkoutMeal(dayName, container) {
+    const meal = MEAL_PLAN[dayName];
+    if (!meal || !container) return;
+    container.innerHTML = `
+      <div class="border-t border-[#2a2a2a] mt-2 pt-4 pb-2">
+        <h2 class="text-xs font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2">
+          <span class="w-1 h-4 bg-[#f97316] rounded-full flex-shrink-0"></span>Today's Meals
+        </h2>
+        <div class="space-y-2">
+          <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-3 flex gap-3 items-start">
+            <span class="text-xl flex-shrink-0">🌅</span>
+            <div><p class="text-xs text-[#6b7280] font-black uppercase tracking-wider">Breakfast</p>
+            <p class="text-white text-sm font-semibold mt-0.5">${meal.breakfast}</p></div>
+          </div>
+          <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-3 flex gap-3 items-start">
+            <span class="text-xl flex-shrink-0">☀️</span>
+            <div><p class="text-xs text-[#6b7280] font-black uppercase tracking-wider">Lunch</p>
+            <p class="text-white text-sm font-semibold mt-0.5">${meal.lunch}</p></div>
+          </div>
+          <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-3 flex gap-3 items-start">
+            <span class="text-xl flex-shrink-0">🌙</span>
+            <div><p class="text-xs text-[#6b7280] font-black uppercase tracking-wider">Dinner</p>
+            <p class="text-white text-sm font-semibold mt-0.5">${meal.dinner}</p></div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function getWeekDateRange(weekIdx) {
+    const msPerWeek = 7 * 24 * 60 * 60 * 1000;
+    const monday = new Date(PROGRAM_START.getTime() + weekIdx * msPerWeek);
+    const sunday = new Date(monday.getTime() + 6 * 24 * 60 * 60 * 1000);
+    const fmt = d => d.toLocaleDateString('en-US', { month:'short', day:'numeric' });
+    return fmt(monday) + ' – ' + fmt(sunday);
+  }
+
+  function renderWorkout(dayName) {
+    renderWeekBanner();
+
+    // ── Week pills ──
+    document.querySelectorAll('.week-pill').forEach(btn => {
+      btn.classList.toggle('active', parseInt(btn.dataset.week) === activeWeekIdx);
+    });
+    const activeWeekPill = document.querySelector('.week-pill.active');
+    if (activeWeekPill) activeWeekPill.scrollIntoView({ behavior:'smooth', block:'nearest', inline:'center' });
+
+    // ── Day pills + TODAY badge ──
+    document.querySelectorAll('.day-pill').forEach(btn => {
+      const isActive  = btn.dataset.day === dayName;
+      const isToday   = btn.dataset.day === todayName;
+      btn.classList.toggle('active', isActive);
+      // Inject or remove today dot
+      let dot = btn.querySelector('.today-dot');
+      if (isToday) {
+        if (!dot) {
+          dot = document.createElement('span');
+          dot.className = 'today-dot';
+          btn.appendChild(dot);
+        }
+      } else {
+        if (dot) dot.remove();
+      }
+    });
+
+    const plan    = getWeekDayPlan(activeWeekIdx, dayName);
+    const hdr     = document.getElementById('workout-day-header');
+    const list    = document.getElementById('workout-exercise-list');
+    const mealDiv = document.getElementById('workout-meal');
+
+    if (plan) {
+      const workoutDate = getWorkoutDate(activeWeekIdx, dayName);
+
+      // Compute total kcal for the day
+      let totalKcal = 0;
+      const addKcal = exArr => exArr && exArr.forEach(e => { if (e.kcal) totalKcal += e.kcal; });
+      addKcal(plan.warmup);
+      addKcal(plan.exercises);
+      if (dayName === 'Tuesday') addKcal([PULLUP_PROG[0], PULLUP_PROG[1]]);
+      addKcal(plan.bonus);
+      const coreNames = getCoreFinisher(activeWeekIdx, dayName);
+      if (coreNames) addKcal(coreNames.map(n => CORE_LIB.find(e => e.name === n)).filter(Boolean));
+
+      hdr.innerHTML = `<div class="flex items-center gap-3 bg-[#1a0900] border border-[#f97316]/20 rounded-xl px-4 py-3">
+        <span class="text-2xl">${plan.icon}</span>
+        <div class="flex-1 min-w-0">
+          <p class="font-black text-white text-lg leading-tight">${plan.name} — ${workoutDate}</p>
+          <p class="text-[#6b7280] text-xs">${dayName} · ${plan.exercises.length} exercises · 3 sets each</p>
+        </div>
+        ${totalKcal > 0 ? `<div class="text-right flex-shrink-0">
+          <p class="text-[#facc15] font-black text-lg leading-tight">~${totalKcal}</p>
+          <p class="text-[#6b7280] text-xs">kcal total</p>
+        </div>` : ''}
+      </div>`;
+
+      let html = '';
+
+      if (plan.warmup && plan.warmup.length) {
+        html += sectionLabel('Dead Hang Warm-Up · Optional', '#6b7280');
+        html += plan.warmup.map((ex,i) => exerciseCard('warmup', ex, i)).join('');
+      }
+
+      if (dayName === 'Tuesday') {
+        html += sectionLabel('Main Back Exercises', '#f97316');
+      }
+      html += plan.exercises.map((ex,i) => exerciseCard('workout', ex, i)).join('');
+
+      if (dayName === 'Tuesday') {
+        html += sectionLabel('Pull-Up · Hang & Scapular', '#6b7280');
+        html += [PULLUP_PROG[0], PULLUP_PROG[1]].map((ex,i) => exerciseCard('pullup', ex, i)).join('');
+      }
+
+      if (plan.bonus && plan.bonus.length) {
+        html += sectionLabel('Pull-Up · Row & Negative', '#6b7280');
+        html += plan.bonus.map((ex,i) => exerciseCard('bonus', ex, i)).join('');
+      }
+
+      const coreFinisherNames = getCoreFinisher(activeWeekIdx, dayName);
+      if (coreFinisherNames && coreFinisherNames.length) {
+        html += sectionLabel('Core Finisher · Abs & Fat Burn', '#4ade80');
+        const coreExs = coreFinisherNames.map(name => CORE_LIB.find(e => e.name === name) || { name, sets:'4 × 30 sec', tip:'', gifs:[], d:'Moderate' });
+        html += coreExs.map((ex, i) => exerciseCard('corefinisher', ex, i)).join('');
+      }
+
+      list.innerHTML = html;
+    } else {
+      hdr.innerHTML = `<div class="text-center py-8">
+        <p class="text-5xl mb-2">😴</p>
+        <p class="text-white font-black text-lg">Rest Day</p>
+        <p class="text-[#6b7280] text-sm mt-1">Recovery is training too — eat well &amp; sleep</p>
+      </div>`;
+      list.innerHTML = '';
+    }
+
+    renderWorkoutMeal(dayName, mealDiv);
+  }
+
+  function setWorkoutDay(day) {
+    activeWkDay = day;
+    renderWorkout(day);
+  }
+
+  function setWeek(idx) {
+    activeWeekIdx = idx;
+    activeWkDay = 'Monday';
+    renderWorkout(activeWkDay);
+  }
+
+  function navWeek(dir) {
+    activeWeekIdx = Math.max(0, Math.min(13, activeWeekIdx + dir));
+    activeWkDay = 'Monday';
+    renderWorkout(activeWkDay);
+  }
+
+  function resetToAutoWeek() {
+    activeWeekIdx = getAutoWeekIdx();
+    activeWkDay   = WK_DAYS.includes(todayName) ? todayName : 'Monday';
+    renderWorkout(activeWkDay);
+  }
+
+  function renderWeekBanner() {
+    const autoIdx = getAutoWeekIdx();
+    const isAuto  = activeWeekIdx === autoIdx;
+    const weekNum = activeWeekIdx + 1;
+    const dateRange = getWeekDateRange(activeWeekIdx);
+    // Compute days remaining in current week (until next Monday)
+    const now = new Date();
+    const dow = now.getDay();
+    const daysToMon = (dow === 0 ? -6 : 1 - dow);
+    const thisMonday = new Date(now.getFullYear(), now.getMonth(), now.getDate() + daysToMon);
+    const nextMonday = new Date(thisMonday.getTime() + 7 * 24 * 60 * 60 * 1000);
+    const daysLeft = Math.ceil((nextMonday - now) / (24 * 60 * 60 * 1000));
+    const banner = document.getElementById('week-banner');
+    if (!banner) return;
+    banner.innerHTML = `
+      <div class="flex items-center gap-2 bg-[#141414] border border-[#2a2a2a] rounded-xl px-3 py-2.5">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2">
+            <span class="text-[#f97316] font-black text-sm">Week ${weekNum} of 14</span>
+            ${isAuto ? '<span class="text-[9px] font-black uppercase tracking-wider bg-[#f97316]/15 text-[#f97316] px-1.5 py-0.5 rounded">current</span>' : '<span class="text-[9px] font-black uppercase tracking-wider bg-[#2a2a2a] text-[#6b7280] px-1.5 py-0.5 rounded">viewing</span>'}
+          </div>
+          <p class="text-[#6b7280] text-xs mt-0.5">${dateRange}${isAuto ? ' · ' + daysLeft + 'd left' : ''}</p>
+        </div>
+        <div style="width:56px;height:4px;background:#2a2a2a;border-radius:2px;flex-shrink:0">
+          <div style="width:${((activeWeekIdx+1)/14*100).toFixed(1)}%;height:100%;background:#f97316;border-radius:2px;transition:width 0.3s"></div>
+        </div>
+      </div>`;
+  }
+
+  // ═══════════════════════════════════════
+  // CORE
+  // ═══════════════════════════════════════
+
+  function renderCore() {
+    const todayList = document.getElementById('core-today-list');
+    const rotation  = CORE_ROTATION[todayName];
+    if (rotation) {
+      const exercises = rotation.map(name => CORE_LIB.find(e=>e.name===name) || {name,dur:'4 × 30 sec',tip:'',gifs:[],d:'Moderate'});
+      todayList.innerHTML = exercises.map((ex,i) => exerciseCard('core_today', ex, i)).join('');
+    } else {
+      todayList.innerHTML = `<p class="text-[#6b7280] text-sm text-center py-4">Rest day — no core today 💤</p>`;
+    }
+    renderCoreLib(activeCoreFilter);
+  }
+
+  function renderCoreLib(filter) {
+    const filtered = filter === 'All' ? CORE_LIB : CORE_LIB.filter(e=>e.d===filter);
+    document.getElementById('core-lib-list').innerHTML =
+      filtered.map(ex => exerciseCard('corelib', ex, CORE_LIB.indexOf(ex))).join('');
+    document.querySelectorAll('#core-filter-buttons .filter-btn').forEach(btn =>
+      btn.classList.toggle('active', btn.dataset.filter === filter));
+    // Re-attach delegation for freshly rendered cards
+    setupGifClicks('core-lib-list');
+    setupCheckboxes('core-lib-list');
+  }
+
+  function filterCore(filter) {
+    activeCoreFilter = filter;
+    renderCoreLib(filter);
+  }
+
+  // ═══════════════════════════════════════
+  // DIET
+  // ═══════════════════════════════════════
+
+  function renderDiet() {
+    renderDietDay(activeDietDay);
+  }
+
+  function renderDietDay(dayName) {
+    // Update day pills + today dot
+    document.querySelectorAll('#diet-day-strip .day-pill').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.day === dayName);
+      let dot = btn.querySelector('.today-dot');
+      if (btn.dataset.day === todayName) {
+        if (!dot) { dot = document.createElement('span'); dot.className = 'today-dot'; btn.appendChild(dot); }
+      } else {
+        if (dot) dot.remove();
+      }
+    });
+
+    const meal = MEAL_PLAN[dayName];
+    const bf   = BREAKFAST[WK_DAYS.indexOf(dayName)] || {};
+    const isWeekend = dayName === 'Saturday' || dayName === 'Sunday';
+    const dinnerNote = isWeekend ? '150–200g, minimal oil, high protein' : 'Light, balanced — good for recovery';
+
+    document.getElementById('diet-day-content').innerHTML = `
+      <div class="space-y-3">
+        <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-4 flex gap-3 items-start">
+          <span class="text-2xl flex-shrink-0">${bf.icon || '🌅'}</span>
+          <div class="flex-1">
+            <p class="text-xs text-[#6b7280] font-black uppercase tracking-wider">Breakfast</p>
+            <p class="text-white text-sm font-semibold mt-0.5">${meal.breakfast}</p>
+            <p class="text-[#f97316] text-xs font-bold mt-0.5">${bf.cal || ''}</p>
+          </div>
+        </div>
+        <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-4 flex gap-3 items-start">
+          <span class="text-2xl flex-shrink-0">☀️</span>
+          <div class="flex-1">
+            <p class="text-xs text-[#6b7280] font-black uppercase tracking-wider">Lunch</p>
+            <p class="text-white text-sm font-semibold mt-0.5">${meal.lunch}</p>
+            <p class="text-[#6b7280] text-xs mt-0.5">High fibre, balanced macros</p>
+          </div>
+        </div>
+        <div class="bg-[#141414] border border-[#2a2a2a] rounded-xl p-4 flex gap-3 items-start">
+          <span class="text-2xl flex-shrink-0">🌙</span>
+          <div class="flex-1">
+            <p class="text-xs text-[#6b7280] font-black uppercase tracking-wider">Dinner</p>
+            <p class="text-white text-sm font-semibold mt-0.5">${meal.dinner}</p>
+            <p class="text-[#6b7280] text-xs mt-0.5">${dinnerNote}</p>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function setDietDay(day) {
+    activeDietDay = day;
+    renderDietDay(day);
+  }
+
+  // ═══════════════════════════════════════
+  // PULL-UPS
+  // ═══════════════════════════════════════
+
+  function renderPullup() {
+    const list = document.getElementById('pullup-page-list');
+    if (!list) return;
+    list.innerHTML = PULLUP_PROG.map((ex,i) => exerciseCard('pullup', ex, i)).join('');
+  }
+
+  // ═══════════════════════════════════════
+  // NAVIGATION
+  // ═══════════════════════════════════════
+
+  function switchTab(tab) {
+    document.querySelectorAll('.tab-page').forEach(el => el.classList.remove('active'));
+    document.getElementById('page-'+tab).classList.add('active');
+    document.querySelectorAll('.nav-tab').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('.nav-tab[data-tab="'+tab+'"]').classList.add('active');
+    activeTab = tab;
+    window.scrollTo(0,0);
+    if (tab === 'home') renderHome();
+  }
+
+  // ═══════════════════════════════════════
+  // INIT
+  // ═══════════════════════════════════════
+
+  document.addEventListener('DOMContentLoaded', function() {
+    renderHome();   // renders date + workout for today via renderWorkout()
+    renderCore();
+    renderDiet();
+    renderPullup();
+
+    setupGifClicks('workout-exercise-list');
+    setupCheckboxes('workout-exercise-list');
+    setupGifClicks('core-today-list');
+    setupCheckboxes('core-today-list');
+    setupGifClicks('pullup-page-list');
+    setupCheckboxes('pullup-page-list');
+    // core-lib-list delegation is attached inside renderCoreLib
+
+    switchTab('home');
+  });
+  </script>
+</body>
+</html>
